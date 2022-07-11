@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Title: {{ project.title }}</h1>
+
+  <img src="{{ project.img.url }}" alt="{{ project.name }}">
+
+  {% if project.independent %}
+        <p><strong>*Independent Project*</strong></p>
+  {% endif %}
+
+  {% if project.ongoing %}
+        <p><strong>Ongoing</strong></p>
+  {% else %}
+        <p><strong>Finished</strong></p>
+  {% endif %}
+
+  <p><strong>Start Date:</strong> {{ project.start }}</p>
+  {% if project.ongoing == False %}
+        <p><strong>End Date:</strong> {{ project.end }}</p>
+  {% endif %}
+
+  <p><strong>Topics:</strong>
+    {% for topic in project.topic.all %}
+        {{ topic.name }}
+    {% endfor %}
+  </p>
+
+  <p><strong>Associations:</strong>
+    {% for association in project.association.all %}
+        {{ association.name }}
+    {% endfor %}
+  </p>
+
+  <a href="{{ project.link }}">"Project Link"</a>
+
+  <p><strong>Description:</strong> {{ project.description }}</p>
+
+{% endblock %}
