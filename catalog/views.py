@@ -28,6 +28,7 @@ class ProjectListView(generic.ListView):
     model = Project
     context_object_name = 'projects'
     template_name = 'projects.html'
+    paginate_by = 10
 
 
 def project_detail_view(request, stub):
