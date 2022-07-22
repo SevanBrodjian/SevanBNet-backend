@@ -12,6 +12,55 @@
   <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
 </head>
 
-{% block content %}{% endblock %}
+<body>
+    {% block img %}
+    {% endblock %}
+            <nav class="navbar navbar-expand sticky-top navbar-dark" style="background-color: rgba(0, 0, 0, 0.8);">
+                <div class="w-100 order-1 order-md-0 ms-5">
+                    <ul class="navbar-nav">
+                        <li class="navbar-brand">
+                            <img src="{% static 'favicon.ico' %}" width="30" height="30" alt="SevanB.net">
+                        </li>
+                        <li class="navbar-brand" style="display: flex;align-items: flex-end;">
+                            <p class="h5">SevanB.net</p>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mx-auto order-0">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active mx-3" aria-current="page" href="{% url 'home' %}"><h5>{% block homenavtxt %}{% endblock %}</h5></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active mx-3" aria-current="page" href="{% url 'projects' %}"><h5>{% block projectsnavtxt %}{% endblock %}</h5></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active mx-3" aria-current="page" href="{% url 'resume' %}"><h5>{% block resumenavtxt %}{% endblock %}</h5></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active mx-3" aria-current="page" href="{% url 'contact' %}"><h5>{% block contactnavtxt %}{% endblock %}</h5></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="w-100 order-3 d-flex justify-content-end me-5">
+                    <ul class="navbar-nav ms-auto">
+                        <a class="nav-item px-3" href="https://github.com/SevanBrodjian">
+                            <img src="{% static 'gitlogo.png' %}" width="30" height="30" alt="git">
+                        </a>
+                        <a class="nav-item px-2" href="https://www.linkedin.com/in/sevan-b/">
+                            <img src="{% static 'lilogo.png' %}" width="35" height="30" alt="linkedin">
+                        </a>
+                    </ul>
+                </div>
+            </nav>
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+    </div>
+</body>
 
 </html>

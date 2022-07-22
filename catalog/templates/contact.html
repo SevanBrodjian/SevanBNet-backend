@@ -1,0 +1,63 @@
+{% extends "base_generic.html" %}
+
+{% block title %}<title>SevanB Contact</title>{% endblock %}
+{% block img %}
+    {% load static %}
+    <div
+    class="bg-image text-light"
+    style="
+    background-image: url('{% static 'space5.jpg' %}');
+    background-size: cover;
+    height: 100vh;
+    background-attachment: fixed;
+    "
+    >
+    <div>
+{% endblock %}
+{% block homenavtxt %}Home{% endblock %}
+{% block projectsnavtxt %}Projects{% endblock %}
+{% block resumenavtxt %}Resume{% endblock %}
+{% block contactnavtxt %}<strong>Contact</strong>{% endblock %}
+
+{% block content %}
+    <br>
+    <h1 class="display-1 text-center my-4"><strong>Contact</strong></h1>
+    <br>
+    <div class="container mx-auto rounded py-3" style="background-color: rgba(0, 0, 0, 0.3);">
+        <div class="row my-3">
+            <div class="col-6"><h6 class="display-6 text-end">Primary Email: </h6></div>
+            <div class="col-6"><h6 class="display-6">
+                <a class="link-info" href="mailto:sevanbro7@gmail.com"><strong>sevanbro7@gmail.com</strong></a>
+            </h6></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-6"><h6 class="display-6 text-end">Secondary Email: </h6></div>
+            <div class="col-6"><h6 class="display-6">
+                <a class="link-info" href="mailto:sevanpb2@illinois.edu"><strong>sevanpb2@illinois.edu</strong></a>
+            </h6></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-6"><h6 class="display-6 text-end">Phone: </h6></div>
+            <div class="col-6"><h6 class="display-6">
+                <a class="link-info" href="Tel: 847-565-9123"><strong>(847) 565-9123</strong></a>
+            </h6></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-6"><h6 class="display-6 text-end">LinkedIn: </h6></div>
+            <div class="col-6"><h6 class="display-6">
+                <a class="link-info" href="https://www.linkedin.com/in/sevan-b/"><strong>linkedin.com/in/sevan-b/</strong></a>
+            </h6></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-6"><h6 class="display-6 text-end">Github: </h6></div>
+            <div class="col-6"><h6 class="display-6">
+                <a class="link-info" href="https://github.com/SevanBrodjian"><strong>github.com/SevanBrodjian</strong></a>
+            </h6></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-6"><h6 class="display-6 text-end">Location: </h6></div>
+            <div class="col-6"><h6 class="display-6">Illinois</h6></div>
+        </div>
+    </div>
+    <br>
+{% endblock %}

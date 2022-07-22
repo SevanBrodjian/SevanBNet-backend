@@ -23,6 +23,11 @@ def home(request):
 
     return render(request, 'home.html', context=context)
 
+def resume(request):
+    return render(request, 'resume.html', {})
+
+def contact(request):
+    return render(request, 'contact.html', {})
 
 class ProjectListView(generic.ListView):
     model = Project
@@ -38,7 +43,16 @@ def project_detail_view(request, stub):
     except Project.DoesNotExist:
         raise Http404('Project does not exist')
 
-    return render(request, 'project_detail.html', context={'project': project})
+    topics = ""
+    first = True
+    for topic in project.topic.all():
+        if first:
+            topics += topic.name
+            first = False
+        else:
+            topics += ", " + topic.name
+
+    return render(request, 'project_detail.html', context={'project': project, 'topics': topics})
 
 # class ProjectDetailView(generic.DetailView):
 #     model = Project

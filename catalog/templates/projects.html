@@ -1,18 +1,47 @@
 {% extends "base_generic.html" %}
 
 {% block title %}<title>SevanB Projects</title>{% endblock %}
+{% block img %}
+    {% load static %}
+    <div
+    class="bg-image text-light"
+    style="
+    background-image: url('{% static 'space2.png' %}');
+    background-size: cover;
+    background-attachment: fixed;
+    "
+    >
+    <div>
+{% endblock %}
+{% block homenavtxt %}Home{% endblock %}
+{% block projectsnavtxt %}<strong>Projects</strong>{% endblock %}
+{% block resumenavtxt %}Resume{% endblock %}
+{% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
-  <h1>Projects</h1>
-  {% if projects %}
-  <ul>
-    {% for project in projects %}
-      <li>
-        <a href="{{ project.get_absolute_url }}">{{ project.title }}</a> ({{ project.topic }})
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>Error: No projects found.</p>
-  {% endif %}
+    <br>
+    <h1 class="display-1 text-center my-4"><strong>Projects</strong></h1>
+    <br>
+
+    {% if projects %}
+        {% for project in projects %}
+
+        <div class="row mx-5 my-4 rounded" style="background-color: rgba(0, 0, 0, 0.3);">
+            <div class="col-5">
+                <a href="{{ project.get_absolute_url }}">
+                    <img class="img-fluid rounded mx-sm-auto d-block my-4 border border-dark" src="{{ project.img.url }}" alt="{{ project.title }}"> 
+                </a>
+            </div>
+            <div class="col-7">
+                <br>
+                <a href="{{ project.get_absolute_url }}">{{ project.title }}</a>
+                <br>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>Error: No projects found.</p>
+    {% endif %}
+
+    <br>
 {% endblock %}

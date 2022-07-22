@@ -1,0 +1,29 @@
+{% extends "base_generic.html" %}
+
+{% block title %}<title>SevanB Resume</title>{% endblock %}
+{% block img %}
+    {% load static %}
+    <div
+    class="bg-image text-light"
+    style="
+    background-image: url('{% static 'space4.jpg' %}');
+    background-size: cover;
+    background-attachment: fixed;
+    "
+    >
+    <div>
+{% endblock %}
+{% block homenavtxt %}Home{% endblock %}
+{% block projectsnavtxt %}Projects{% endblock %}
+{% block resumenavtxt %}<strong>Resume</strong>{% endblock %}
+{% block contactnavtxt %}Contact{% endblock %}
+
+{% block content %}
+    <br>
+    <h1 class="display-1 text-center my-4"><strong>Resume</strong></h1>
+    <br>
+    <div class="container-fluid d-flex justify-content-center">
+        <iframe src="https://drive.google.com/file/d/1VR5zGLbJAFn8Jk5ORUkFcOMe_Qnjze80/preview" width="800" height="1050" allow="autoplay"></iframe>
+    </div>
+    <br>
+{% endblock %}

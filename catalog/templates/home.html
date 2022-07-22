@@ -1,16 +1,43 @@
 {% extends "base_generic.html" %}
 
 {% block title %}<title>SevanB Home</title>{% endblock %}
+{% block img %}
+    {% load static %}
+    <div
+    class="bg-image text-light"
+    style="
+    background-image: url('{% static 'space.jpg' %}');
+    background-size: cover;
+    height: 100vh;
+    background-attachment: fixed;
+    "
+    >
+    <div>
+{% endblock %}
+{% block homenavtxt %}<strong>Home</strong>{% endblock %}
+{% block projectsnavtxt %}Projects{% endblock %}
+{% block resumenavtxt %}Resume{% endblock %}
+{% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
-  <h1>SevanB Home</h1>
-  <p>Welcome to sevanb.net, a website developed by <em>Sevan Brodjian</em>!</p>
-  <h2>Dynamic content</h2>
-  <p>The site has the following record counts:</p>
-  <ul>
-    <li><strong>Total Projects:</strong> {{ num_projects }}</li>
-    <li><strong>Ongoing Projects:</strong> {{ num_ongoing }}</li>
-    <li><strong>Associations:</strong> {{ num_associations }}</li>
-    <li><strong>Topics:</strong> {{ num_topics }}</li>
-  </ul>
+    <div class="container-fluid mt-4 py-auto">
+        <div class="row">
+            <div class="col-5">
+                <img class="img-fluid mx-auto d-block" style="height:70%;" src="{% static 'headshot2.jpg' %}" alt="SevanB.net">
+            </div>
+            
+            <div class="col-7">
+                <h1>SevanB Home</h1>
+                <p>Welcome to sevanb.net, a website developed by <em>Sevan Brodjian</em>!</p>
+                <h2>Dynamic content</h2>
+                <p>The site has the following record counts:</p>
+                <ul>
+                    <li><strong>Total Projects:</strong> {{ num_projects }}</li>
+                    <li><strong>Ongoing Projects:</strong> {{ num_ongoing }}</li>
+                    <li><strong>Associations:</strong> {{ num_associations }}</li>
+                    <li><strong>Topics:</strong> {{ num_topics }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endblock %}

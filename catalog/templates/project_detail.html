@@ -2,8 +2,7 @@
 
 {% block title %}<title>SevanB {{ project.title }}</title>{% endblock %}
 
-{% block content %}
-<body>
+{% block img %}
     {% load static %}
     <div
     class="bg-image text-light"
@@ -13,88 +12,80 @@
     background-attachment: fixed;
     "
     >
-        <div class="mask" style="background-color: rgba(0, 0, 0, 0.3);">
+    <div class="mask" style="background-color: rgba(0, 0, 0, 0.3);">
+{% endblock %}
+{% block homenavtxt %}Home{% endblock %}
+{% block projectsnavtxt %}Projects{% endblock %}
+{% block resumenavtxt %}Resume{% endblock %}
+{% block contactnavtxt %}Contact{% endblock %}
 
-            <nav class="navbar navbar-expand sticky-top navbar-dark" style="background-color: rgba(0, 0, 0, 0.8);">
-                <div class="container-fluid">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active mx-3" aria-current="page" href="{% url 'home' %}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active mx-3" aria-current="page" href="{% url 'projects' %}">Projects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active mx-3" aria-current="page" href="#">Resume</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active mx-3" aria-current="page" href="#">Contact</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        
-            <h1 class="text-center py-3 display-1"><strong>{{ project.title }}</strong></h1>
+{% block content %}
+    <h1 class="text-center my-3 display-1"><strong>{{ project.title }}</strong></h1>
+    <br>
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-9">
-                        <img class="img-fluid rounded mx-sm-auto d-block mb-4" src="{{ project.img.url }}" alt="{{ project.title }}" width="1100" height="500"> 
-                    </div>
-                    <div class="col-3">
-                        {% if project.independent %}
-                            <p><strong>*Independent Project*</strong></p>
-                        {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="col-9">
+                <img class="img-fluid rounded mx-sm-auto d-block mb-4 border border-secondary" src="{{ project.img.url }}" alt="{{ project.title }}" width="1100" height="500"> 
+            </div>
+            <div class="col-3">
+                <div class="px-4 py-4 rounded border border-secondary lead" style="background-color: rgba(0, 0, 0, 0.7);">
+                    
+                    {% if project.independent %}
+                        <p><strong>*Independent Project*</strong></p>
+                    {% endif %}
 
+                    {% if project.link %}
                         <a class="link-info" href="{{ project.link }}"><strong>Project Source</strong></a>
-                        
-                        <br><br>
+                    {% endif %}
+                    
+                    <br><br>
 
-                        <p><strong>Start Date:</strong> {{ project.start }}</p>
+                    <p><strong>Start Date:</strong> {{ project.start }}</p>
 
-                        {% if project.ongoing %}
-                            <p><strong>Ongoing</strong></p>
-                        {% else %}
-                            <p><strong>End Date:</strong> {{ project.end }}</p>
-                        {% endif %}
+                    {% if project.ongoing %}
+                        <p><strong>Ongoing</strong></p>
+                    {% else %}
+                        <p><strong>End Date:</strong> {{ project.end }}</p>
+                    {% endif %}
 
-                        {% if project.topic.all %}
-                            <p><strong>Topics</strong></p>
-                            <ul>
-                                {% for topic in project.topic.all %}
-                                    <li>
-                                        {{ topic.name }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
+                    {% if topics %}
+                    <p><strong>Topics</strong></p>
+                    <ul>
+                        <li>{{ topics }}</li>
+                    </ul>
+                    {% endif %}
 
-                        {% if project.association.all %}
-                            <p><strong>Associations</strong></p>
-                            <ul>
-                                {% for association in project.association.all %}
-                                    <li>
-                                        {{ association.name }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p><strong>Associations:</strong> n/a</p>
-                        {% endif %}
-                        
-                        <br><br>
-                        <p class="text-center">↓↓ Description ↓↓</p>
-                    </div>
+                    {% if project.association.all %}
+                        <p><strong>Associations</strong></p>
+                        <ul>
+                            {% for association in project.association.all %}
+                                <li>
+                                    {{ association.name }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p><strong>Associations:</strong> n/a</p>
+                    {% endif %}
                 </div>
-
-                <br>
-                <h4 class="text-center">Description</h4>
-                <br>
-                <p class="text-center" style="white-space: pre-line">{{ project.description }}</p>
-                <br>
             </div>
         </div>
+        <br>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <div class="px-4 py-4 rounded border border-secondary" style="background-color: rgba(0, 0, 0, 0.6);">
+                    <br>
+                    <h2 class="text-center diplay-2">Description</h2>
+                    <br>
+                    <p class="text-center h5" style="white-space: pre-line">{{ project.description }}</p>
+                    <br>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+        <br>
     </div>
-</body>
     
 {% endblock %}
