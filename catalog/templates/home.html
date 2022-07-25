@@ -10,6 +10,7 @@
     background-size: cover;
     height: 100vh;
     background-attachment: fixed;
+    background-repeat: repeat;
     "
     >
     <div>
@@ -20,24 +21,22 @@
 {% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
-    <div class="container-fluid mt-4 py-auto">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-5">
-                <img class="img-fluid mx-auto d-block" style="height:70%;" src="{% static 'headshot2.JPG' %}" alt="SevanB.net">
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col">
+                        <img class="float-left img-fluid d-block rounded mx-auto mt-5" style="height:80vh;" src="{% static 'headshot2.JPG' %}" alt="SevanB.net">
+                    </div>
+                </div>
             </div>
-            
-            <div class="col-7">
-                <h1>SevanB Home</h1>
-                <p>Welcome to sevanb.net, a website developed by <em>Sevan Brodjian</em>!</p>
-                <h2>Dynamic content</h2>
-                <p>The site has the following record counts:</p>
-                <ul>
-                    <li><strong>Total Projects:</strong> {{ num_projects }}</li>
-                    <li><strong>Ongoing Projects:</strong> {{ num_ongoing }}</li>
-                    <li><strong>Associations:</strong> {{ num_associations }}</li>
-                    <li><strong>Topics:</strong> {{ num_topics }}</li>
-                </ul>
+            <div class="col-sm-8">
+                <div class="row text-left px-3 py-3 mt-3 me-3" style="background-color: rgba(0, 0, 0, 0.4);">
+                    <h1 class="display-1"><strong>Sevan Brodjian</strong></h1>
+                    <h3 class="display-3"><strong><em>Portfolio Site</em></strong></h3>
+                </div>
             </div>
         </div>
     </div>
+    <br>
 {% endblock %}
