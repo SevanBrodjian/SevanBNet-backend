@@ -8,9 +8,9 @@
     style="
     background-image: url('{% static 'space.jpg' %}');
     background-size: cover;
-    height: 100vh;
     background-attachment: fixed;
-    background-repeat: repeat;
+    background-repeat: repeat-y;
+    height: 100vh;
     "
     >
     <div>
@@ -23,14 +23,14 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-4">
                 <div class="row">
                     <div class="col">
-                        <img class="float-left img-fluid d-block rounded mx-auto mt-5" style="height:80vh;" src="{% static 'headshot2.JPG' %}" alt="SevanB.net">
+                        <img class="float-left img-fluid d-block rounded mx-auto mt-5" style="height:auto;width:auto;max-height:80vh;" src="{% static 'headshot2.JPG' %}" alt="SevanB.net">
                     </div>
                 </div>
             </div>
-            <div class="col-sm-8">
+            <div class="col-8">
                 <div class="row text-left px-3 py-3 mt-3 me-3" style="background-color: rgba(0, 0, 0, 0.4);">
                     <h1 class="display-1"><strong>Sevan Brodjian</strong></h1>
                     <h3 class="display-3"><strong><em>Portfolio Site</em></strong></h3>
