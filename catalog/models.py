@@ -35,7 +35,7 @@ class Project(models.Model):
     association = models.ManyToManyField(Association, blank=True)
 
     class Meta:
-        ordering = ['ongoing', '-end', 'title']
+        ordering = ['-ongoing', '-end', 'title']
 
     def __str__(self):
         """String for representing the Model object."""
