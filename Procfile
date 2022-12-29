@@ -1,1 +1,1 @@
-web: gunicorn sevanbnet.wsgi --log-file -
+web: python manage.py migrate && gunicorn sevanbnet.wsgi
