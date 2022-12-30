@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ["web-production-701d.up.railway.app", "sevanb.net", "127.0.0.1", "www.sevanb.net"]
-CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app', 'https://www.sevanb.net']
 
 # Application definition
 
