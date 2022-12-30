@@ -1,1 +1,1 @@
-web: python manage.py collectstatic && python manage.py migrate && gunicorn sevanbnet.wsgi
+web: python manage.py makemigrations && python manage.py migrate && gunicorn sevanbnet.wsgi
