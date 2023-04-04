@@ -30,7 +30,7 @@ class Project(models.Model):
     end = models.DateField(blank=True, null=True)
     ongoing = models.BooleanField()
     topic = models.ManyToManyField(Topic, blank=True)
-    img = models.ImageField(upload_to='img', max_length=None)
+    img = models.CharField(max_length=500, blank=True) #models.ImageField(upload_to='img', max_length=None)
     link = models.CharField(max_length=500, blank=True)
     association = models.ManyToManyField(Association, blank=True)
 
