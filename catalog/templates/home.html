@@ -4,16 +4,16 @@
 {% block img %}
     {% load static %}
     <div
-    class="bg-image text-light"
-    style="
-    background-image: url('{% static 'space.jpg' %}');
-    background-size: cover;
-    background-attachment: fixed;
-    background-repeat: repeat-y;
-    height: 100vh;
-    "
+        class="bg-image text-light"
+        style="
+        background-image: url('{% static 'space.jpg' %}');
+        background-size: cover;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-position: center center;
+        min-height: 100vh;
+        "
     >
-    <div>
 {% endblock %}
 {% block homenavtxt %}<strong>Home</strong>{% endblock %}
 {% block projectsnavtxt %}Projects{% endblock %}
@@ -23,14 +23,12 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-4">
-                <div class="row">
-                    <div class="col">
-                        <img class="float-left img-fluid d-block rounded mx-auto mt-5" style="height:auto;width:auto;max-height:80vh;" src="{% static 'headshot2.JPG' %}" alt="SevanB.net">
-                    </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="d-flex justify-content-center mt-5">
+                    <img class="img-fluid rounded" style="height: auto; width: auto; max-height: 80vh;" src="{% static 'headshot2.JPG' %}" alt="SevanB.net">
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-lg-8 col-md-12">
                 <div class="row text-left px-3 py-3 mt-3 me-3 rounded" style="background-color: rgba(0, 0, 0, 0.55);">
                     <h1 class="display-1"><strong>Sevan Brodjian</strong></h1>
                     <h3 class="display-3"><strong><em>Data Science</em></strong></h3>
@@ -40,13 +38,12 @@
                     <p class="lead mt-4">
                         Humanity's technological progress is closely modeled by a hyperbolic function, and our best estimates indicate that <a href="https://drive.google.com/drive/u/1/folders/15ArhEPZSTYU8f012bs6ehPS6-xmhtBPP" class="link-info">the technological singularity will be arriving within the century</a>.
                         <br><br>
-                        After 2 years of data science experience I have developed a passion for machine learning. In particular, I am fascinated by artificial neural networks and their applications in simulated evolution, bioinformatics, and art generation. I have taken courses in AI, ML, Applied ML, and statistics.
+                        After 2 years of data science experience, I have developed a passion for machine learning. In particular, I am fascinated by artificial neural networks and their applications in simulated evolution, bioinformatics, and art generation. I have taken courses in AI, ML, Applied ML, and statistics.
                         <br><br>
-                        Currently I am a fresh graduate in computer engineering from the University of Illinois at Urbana-Champaign with a graduation date of December, 2022. I graduated with a 3.99 GPA with 159 Credit Hours completed.
+                        Currently, I am a fresh graduate in computer engineering from the University of Illinois at Urbana-Champaign with a graduation date of December 2022. I graduated with a 3.99 GPA with 159 Credit Hours completed.
                     </p>
                 </div>
             </div>
         </div>
     </div>
-    <br>
 {% endblock %}
