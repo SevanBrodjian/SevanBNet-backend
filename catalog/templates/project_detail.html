@@ -28,7 +28,11 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-7">
-                <iframe src="{{ project.img }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="width: 100%; aspect-ratio: 16/9;"></iframe>
+                    {% if 'youtube' in project.img %}
+                    <iframe src="{{ project.img }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="width: 100%; aspect-ratio: 16/9;"></iframe>
+                    {% else %}
+                        <img class="img-fluid rounded mx-sm-auto d-block my-4 border border-dark" src="{{ project.img }}" alt="{{ project.title }}"> 
+                    {% endif %}
             </div>
             <div class="col-lg-5">
                 <div class="px-4 py-4 rounded border border-secondary lead" style="background-color: rgba(0, 0, 0, 0.7); font-size: 1.5rem;">
