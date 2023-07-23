@@ -35,11 +35,11 @@
                     {% endif %}
             </div>
             <div class="col-lg-5">
-                <div class="px-4 py-4 rounded border border-secondary lead" style="background-color: rgba(0, 0, 0, 0.7); font-size: 1.5rem;">
+                <div class="px-4 py-4 rounded lead" style="background-color: rgba(0, 0, 0, 0.7); font-size: 1.5rem;">
 
-                    {% if project.independent %}
+                    <!-- {% if project.independent %}
                         <p><strong>*Independent Project*</strong></p>
-                    {% endif %}
+                    {% endif %} -->
 
                     {% if project.link %}
                         <a class="link-info" href="{{ project.link }}"><strong>Project Source</strong></a>
@@ -47,19 +47,17 @@
 
                     <br><br>
 
-                    <p><strong>Start Date:</strong> {{ project.start }}</p>
-
                     {% if project.ongoing %}
-                        <p><strong>Ongoing</strong></p>
+                        <p><em>{{ project.start }} - Present (ongoing)</em></p>
                     {% else %}
-                        <p><strong>End Date:</strong> {{ project.end }}</p>
+                        <p><em>{{ project.start }} - {{ project.end }}</em></p>
                     {% endif %}
 
                     {% if topics %}
-                    <p><strong>Topics</strong></p>
-                    <ul>
-                        <li>{{ topics }}</li>
-                    </ul>
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                            <li>{{ topics }}</li>
+                        </ul>
                     {% endif %}
 
                     {% if project.association.all %}
@@ -81,7 +79,7 @@
         <div class="row">
             <div class="col-1"></div>
             <div class="col-lg-10">
-                <div class="px-2 py-4 rounded border border-secondary" style="background-color: rgba(0, 0, 0, 0.6);">
+                <div class="p-5 py-4 rounded" style="background-color: rgba(0, 0, 0, 0.7);">
                     <br>
                     <h2 class="text-center display-2">Description</h2>
                     <br>

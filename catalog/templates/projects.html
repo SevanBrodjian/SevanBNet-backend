@@ -6,7 +6,7 @@
     <div
         class="bg-image text-light"
         style="
-        background-image: url('{% static 'space2.png' %}');
+        background-image: url('{% static 'space3.jpg' %}');
         background-size: cover;
         background-attachment: fixed;
         background-position: center center;
@@ -20,7 +20,8 @@
 {% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
-    <h1 class="display-1 text-center my-4"><strong>Projects</strong></h1>
+    <h1 class="display-1 text-center my-4"><strong>Independent Projects</strong></h1>
+    <br>
 
     {% if projects %}
         {% for project in projects %}
@@ -39,11 +40,11 @@
                     <div class="col text-center"><a class="mt-3 text-info" href="{{ project.get_absolute_url }}" style="font-size: 3rem;">{{ project.title }}</a></div>
                 </div>
 
-                {% if project.independent %}
+                <!-- {% if project.independent %}
                     <div class="row mt-2">
                         <div class="col text-center"><p><strong>*Independent Project*</strong></p></div>
                     </div>
-                {% endif %}
+                {% endif %} -->
 
                 <div class="row mt-2">
                     {% if project.ongoing %}

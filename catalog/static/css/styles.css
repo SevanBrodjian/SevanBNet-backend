@@ -3,3 +3,29 @@
     padding: 0;
     list-style: none;
 }
+
+html, body {
+    height: 100%;
+}
+
+.full-height {
+    min-height: calc(100vh - var(--navbar-height, 0px));
+}
+
+@media (min-width: 1400px) {
+    .me-md-big {
+        margin-right: 15rem; /* Adjust the value as needed */
+    }
+}
+
+@media (min-width: 1400px) {
+    .contact-text {
+        font-size:3vw; /* Adjust the value as needed */
+    }
+}
+
+@media (max-width: 1400px) {
+    .contact-text {
+        font-size:4.25vw; /* Adjust the value as needed */
+    }
+}
