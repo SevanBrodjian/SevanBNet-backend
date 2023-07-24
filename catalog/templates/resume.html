@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block title %}<title>SevanB Resume</title>{% endblock %}
+
 {% block img %}
     {% load static %}
     <div
@@ -20,8 +21,10 @@
 {% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
+    <br>
     <div class="container-fluid d-flex justify-content-center">
-        <iframe src="https://drive.google.com/file/d/1VR5zGLbJAFn8Jk5ORUkFcOMe_Qnjze80/preview" width="800" height="1050" allow="autoplay"></iframe>
+        <!-- <embed src="{% static 'resume.pdf' %}" type="application/pdf" width="100%" height="600px"> -->
+        <img style="background-color: #ffffff;" src="{% static 'resume.svg' %}" alt="Resume" class="img-fluid">
     </div>
     <br>
 {% endblock %}

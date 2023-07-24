@@ -25,7 +25,7 @@
 
     {% if projects %}
         {% for project in projects %}
-        <div class="row mx-5 my-4 mx-auto rounded" style="background-color: rgba(0, 0, 0, 0.5); max-width: 80%; margin-left: auto; margin-right: auto;">
+        <div class="row mx-5 my-4 mx-auto rounded" style="background-color: rgba(0, 0, 0, 0.75); max-width: 80%; margin-left: auto; margin-right: auto;">
             <div class="col-md-5 col-12">
                 <a href="{{ project.get_absolute_url }}">
                     {% if 'youtube' in project.img %}
