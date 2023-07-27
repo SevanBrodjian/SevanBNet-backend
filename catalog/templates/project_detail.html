@@ -4,7 +4,7 @@
 
 {% block img %}
     {% load static %}
-    <div
+    <!-- <div
         class="bg-image text-light"
         style="
         background-image: url('{% static 'space3.jpg' %}');
@@ -14,7 +14,8 @@
         min-height: 100vh;
         "
     >
-    <div class="mask" style="background-color: rgba(0, 0, 0, 0.3);">
+    <div class="mask" style="background-color: rgba(0, 0, 0, 0.3);"> -->
+    <!-- <canvas id="canvas"></canvas> -->
 {% endblock %}
 {% block homenavtxt %}Home{% endblock %}
 {% block projectsnavtxt %}Projects{% endblock %}
@@ -22,10 +23,11 @@
 {% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
-    <h1 class="text-center my-3 display-1"><strong>{{ project.title }}</strong></h1>
+    <div id="canvasContainer"></div>
+    <h1 class="text-center my-3 display-1 infront text-white"><strong>{{ project.title }}</strong></h1>
     <br>
 
-    <div class="container">
+    <div class="container infront">
         <div class="row">
             <div class="col-lg-7">
                     {% if 'youtube' in project.img %}
@@ -35,14 +37,14 @@
                     {% endif %}
             </div>
             <div class="col-lg-5">
-                <div class="px-4 py-4 rounded lead" style="background-color: rgba(0, 0, 0, 0.7); font-size: 1.5rem;">
+                <div class="px-4 py-4 rounded lead text-light" style="background-color: rgba(0, 0, 0, 0.85); font-size: 1.5rem;">
 
                     <!-- {% if project.independent %}
                         <p><strong>*Independent Project*</strong></p>
                     {% endif %} -->
 
                     {% if project.link %}
-                        <a class="link-info" href="{{ project.link }}"><strong>Project Source</strong></a>
+                        <a class="text-primary" href="{{ project.link }}"><strong>Project Source</strong></a>
                     {% endif %}
 
                     <br><br>
@@ -79,7 +81,7 @@
         <div class="row">
             <div class="col-1"></div>
             <div class="col-lg-10">
-                <div class="p-5 py-4 rounded" style="background-color: rgba(0, 0, 0, 0.7);">
+                <div class="p-5 py-4 rounded text-light" style="background-color: rgba(0, 0, 0, 0.85);">
                     <br>
                     <h2 class="text-center display-2">Description</h2>
                     <br>
@@ -90,4 +92,6 @@
         </div>
     </div>
     <br>
+
+    <script src="{% static 'scripts/script.js' %}"></script>
 {% endblock %}
