@@ -1,4 +1,5 @@
 let particles = [];
+let rand_col = 0; 
 
 function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
@@ -6,6 +7,8 @@ function setup() {
   frameRate(30);
   colorMode(HSB, 100);  // Use HSB color mode for easy color variations
   background(0);  // Black background
+  rand_col = random(100);
+  rand_sal = random(100);
 }
 
 function draw() {
@@ -30,7 +33,7 @@ class Particle {
     this.position = createVector(random(width), random(height));  // Random starting position
     this.velocity = createVector(random(-1, 1), random(-1, 1));  // Random initial velocity
     this.lifespan = 255;  // Initial lifespan
-    this.hue = random(100);  // Random initial color
+    this.hue = (rand_col, rand_sal); //random(100);  // Random initial color
   }
 
   update() {
