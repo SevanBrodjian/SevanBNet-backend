@@ -45,10 +45,14 @@ class Particle {
   display() {
     noStroke();
     fill(this.hue, 100, 100, this.lifespan);  // Use color and lifespan to set fill
-    ellipse(this.position.x, this.position.y, 12);  // Draw a circle at the particle's position
+    ellipse(this.position.x, this.position.y, 8);  // Draw a circle at the particle's position
   }
 
   isDead() {
     return this.lifespan < 0;  // If the lifespan is less than 0, the particle is dead
   }
+}
+
+function goBack() {
+  window.history.back();
 }

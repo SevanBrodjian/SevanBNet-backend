@@ -29,6 +29,9 @@ def resume(request):
 def contact(request):
     return render(request, 'contact.html', {})
 
+def blog(request):
+    return render(request, 'blog.html', {})
+
 class ProjectListView(generic.ListView):
     model = Project
     context_object_name = 'projects'

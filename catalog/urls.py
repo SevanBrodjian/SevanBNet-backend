@@ -9,5 +9,6 @@ urlpatterns = [
     path('projects/', views.ProjectListView.as_view(), name='projects'),
     path('resume/', views.resume, name='resume'),
     path('contact/', views.contact, name='contact'),
+    path('blog/', views.blog, name='blog'),
     re_path(r'^projects/(?P<stub>[-\w]+)$', views.project_detail_view, name='project-detail'),
 ]

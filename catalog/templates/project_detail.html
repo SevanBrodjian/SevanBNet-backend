@@ -19,11 +19,19 @@
 {% endblock %}
 {% block homenavtxt %}Home{% endblock %}
 {% block projectsnavtxt %}Projects{% endblock %}
+{% block blognavtxt %}Blog{% endblock %}
 {% block resumenavtxt %}Resume{% endblock %}
 {% block contactnavtxt %}Contact{% endblock %}
 
 {% block content %}
     <div id="canvasContainer"></div>
+
+    <a href="#" onclick="goBack()"  class="d-inline-block ml-3" style="margin-left: 40px; display: inline-block; position: relative; width: 75px; height: 75px;"
+    onmouseover="this.querySelector('img').style.opacity = 1;" 
+    onmouseout="this.querySelector('img').style.opacity = 0.5;">
+        <img src="{% static 'back_arrow.png' %}" style="width: 100%; height: 100%; transition: opacity 0.3s; opacity: 0.5;" alt="Back to Projects">
+    </a>
+
     <h1 class="text-center my-3 display-1 infront text-white"><strong>{{ project.title }}</strong></h1>
     <br>
 
