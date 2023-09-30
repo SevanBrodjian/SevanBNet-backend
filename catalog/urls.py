@@ -5,10 +5,11 @@ from django.views.generic import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('home/', views.home, name='home'),
     path('projects/', views.ProjectListView.as_view(), name='projects'),
     path('resume/', views.resume, name='resume'),
-    path('contact/', views.contact, name='contact'),
+    # path('contact/', views.contact, name='contact'),
     path('blog/', views.blog, name='blog'),
     re_path(r'^projects/(?P<stub>[-\w]+)$', views.project_detail_view, name='project-detail'),
+    re_path(r'^blog/(?P<stub>[-\w]+)$', views.blog_post, name='blog-post'),
 ]

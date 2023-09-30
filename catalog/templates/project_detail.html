@@ -52,7 +52,7 @@
                     {% endif %} -->
 
                     {% if project.link %}
-                        <a class="text-primary" href="{{ project.link }}"><strong>Project Source</strong></a>
+                        <a class="text-info" href="{{ project.link }}"><strong>Project Source</strong></a>
                     {% endif %}
 
                     <br><br>
@@ -102,4 +102,5 @@
     <br>
 
     <script src="{% static 'scripts/script.js' %}"></script>
+    <script src="{% static 'scripts/go_back.js' %}"></script>
 {% endblock %}

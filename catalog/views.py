@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import Http404
 
-from .models import Topic, Project, Association
+from .models import Topic, Project, Association, BlogPost
 
 
 def home(request):
@@ -29,9 +29,6 @@ def resume(request):
 def contact(request):
     return render(request, 'contact.html', {})
 
-def blog(request):
-    return render(request, 'blog.html', {})
-
 class ProjectListView(generic.ListView):
     model = Project
     context_object_name = 'projects'
@@ -57,10 +54,17 @@ def project_detail_view(request, stub):
 
     return render(request, 'project_detail.html', context={'project': project, 'topics': topics})
 
-# class ProjectDetailView(generic.DetailView):
-#     model = Project
-#     context_object_name = 'project'
-#     template_name = 'project_detail.html'
 
-#     def get_object(queryset=None):
-#         print(queryset)
+def blog_post(request, stub):
+    stub=stub.replace('_', ' ')
+    try:
+        blog_post = BlogPost.objects.get(title=stub)
+    except BlogPost.DoesNotExist:
+        raise Http404('Blog post does not exist')
+    
+    return render(request, 'blog_post.html', context={'post': blog_post})
+
+
+def blog(request):
+    blog_posts = BlogPost.objects.all().order_by('-published_date')
+    return render(request, 'blog.html', {'blog_posts': blog_posts})

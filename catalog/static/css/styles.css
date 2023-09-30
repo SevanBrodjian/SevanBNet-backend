@@ -9,8 +9,13 @@ html, body {
     background-color: black;
 }
 
+.black-filter {
+    filter: brightness(0) saturate(100%);
+}
+
 .full-height {
     min-height: calc(100vh - var(--navbar-height, 0px));
+    overflow-y: hidden;
 }
 
 .infront {

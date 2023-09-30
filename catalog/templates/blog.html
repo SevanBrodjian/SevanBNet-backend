@@ -1,6 +1,6 @@
 {% extends "base_generic.html" %}
 
-{% block title %}<title>SevanB Resume</title>{% endblock %}
+{% block title %}<title>SevanB Blog</title>{% endblock %}
 
 {% block img %}
     {% load static %}
@@ -15,6 +15,7 @@
         "
     >
 {% endblock %}
+
 {% block homenavtxt %}Home{% endblock %}
 {% block projectsnavtxt %}Projects{% endblock %}
 {% block blognavtxt %}<strong>Blog</strong>{% endblock %}
@@ -23,7 +24,25 @@
 
 {% block content %}
     <br><br>
-    <div class="container-fluid d-flex justify-content-center">
-        <h1 class="display-1"><strong>Coming soon</strong></h1>
+    <div class='container-fluid d-flex justify-content-center'>
+        <h1 class='display-1'><strong>Blog</strong></h1>
+    </div>
+    <br><br>
+    <div class='container'>
+        <div class='blog_post px-5 py-4 rounded' style="background-color: rgba(0, 0, 0, 0.55);">
+        {% for post in blog_posts %}
+            
+                <h2 class="fs-1">{{ post.title }}</h2>
+                <p>{{ post.published_date }}</p>
+                <p class="fs-5">{{ post.description }}</p>
+                {% if post.image %}
+                    <img src='{{ post.image }}' alt='{{ post.title }}' width='300'>
+                {% endif %}
+                <a class='text-info fs-5' href="{{ post.get_absolute_url }}">Read More</a>
+            
+            <br><br><br><br>
+        {% endfor %}
+        </div>
+        <br><br>
     </div>
 {% endblock %}

@@ -45,3 +45,21 @@ class Project(models.Model):
         """Returns the URL to access a detail record for this book."""
         uri = self.title.replace(' ', '_')
         return reverse('project-detail', args=[str(uri)])
+    
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    content = models.TextField()
+    image = models.CharField(max_length=500, blank=True)
+    published_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['published_date']
+
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        """Returns the URL to access a detail record for this book."""
+        uri = self.title.replace(' ', '_')
+        return reverse('blog-post', args=[str(uri)])

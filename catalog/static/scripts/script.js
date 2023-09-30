@@ -52,7 +52,3 @@ class Particle {
     return this.lifespan < 0;  // If the lifespan is less than 0, the particle is dead
   }
 }
-
-function goBack() {
-  window.history.back();
-}
