@@ -29,9 +29,9 @@
     </div>
     <br><br>
     <div class='container'>
-        <div class='blog_post px-5 py-4 rounded' style="background-color: rgba(0, 0, 0, 0.55);">
+        
         {% for post in blog_posts %}
-            
+            <div class='blog_post px-5 py-4 rounded' style="background-color: rgba(0, 0, 0, 0.60);">
                 <h2 class="fs-1">{{ post.title }}</h2>
                 <p>{{ post.published_date }}</p>
                 <p class="fs-5">{{ post.description }}</p>
@@ -39,10 +39,11 @@
                     <img src='{{ post.image }}' alt='{{ post.title }}' width='300'>
                 {% endif %}
                 <a class='text-info fs-5' href="{{ post.get_absolute_url }}">Read More</a>
-            
-            <br><br><br><br>
+                <br><br>
+            </div>
+            <br><br>
         {% endfor %}
-        </div>
+        
         <br><br>
     </div>
 {% endblock %}

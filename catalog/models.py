@@ -51,7 +51,7 @@ class BlogPost(models.Model):
     description = models.TextField()
     content = models.TextField()
     image = models.CharField(max_length=500, blank=True)
-    published_date = models.DateTimeField(auto_now=True)
+    published_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['published_date']
