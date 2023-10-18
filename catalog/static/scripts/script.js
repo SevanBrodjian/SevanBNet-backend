@@ -1,54 +1,94 @@
 let particles = [];
-let rand_col = 0; 
 
 function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent('canvasContainer');
   frameRate(30);
-  colorMode(HSB, 100);  // Use HSB color mode for easy color variations
-  background(0);  // Black background
-  rand_col = random(100);
-  rand_sal = random(100);
+  colorMode(HSB, 255);
+  background(0);
 }
 
 function draw() {
-  background(0, 0, 0, 10);  // Apply a semi-transparent black background to create a trailing effect
+  // Clear the background more aggressively to avoid buildup, adjust alpha as needed
+  background(0, 0, 0, 20);
 
-  if (particles.length < 100) {  // Limit the number of particles
-    let p = new Particle();  // Create a new particle
-    particles.push(p);  // Add it to the array
+  let forceDirection = createVector(mouseX - width / 2, mouseY - height / 2);
+  forceDirection.normalize().mult(0.1); // Reduced force to cursor
+
+  // Reduce particle count
+  if (particles.length < 90) { 
+    particles.push(new Particle());
   }
 
   for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update();  // Update the particle's position
-    particles[i].display();  // Draw the particle
-    if (particles[i].isDead()) {  // If the particle is dead
-      particles.splice(i, 1);  // Remove it from the array
+    particles[i].attract(forceDirection);
+    particles[i].update();
+    particles[i].display();
+    if (particles[i].isDead()) {
+      particles.splice(i, 1);
     }
   }
 }
 
+// function draw() {
+//   background(0, 0, 0, 20);
+//   let mousePosition = createVector(mouseX, mouseY); // Create a vector for the mouse position
+
+//   // Reduce particle count
+//   if (particles.length < 90) { 
+//     particles.push(new Particle());
+//   }
+
+//   for (let i = particles.length - 1; i >= 0; i--) {
+//       particles[i].attract(mousePosition); // Pass the mouse position to the attract method
+//       particles[i].update();
+//       particles[i].display();
+//       if (particles[i].isDead()) {
+//           particles.splice(i, 1);
+//       }
+//   }
+// }
+
 class Particle {
   constructor() {
-    this.position = createVector(random(width), random(height));  // Random starting position
-    this.velocity = createVector(random(-1, 1), random(-1, 1));  // Random initial velocity
-    this.lifespan = 255;  // Initial lifespan
-    this.hue = (rand_col, rand_sal); //random(100);  // Random initial color
+    this.position = createVector(random(width), random(height));
+    this.prevPos = this.position.copy(); // New property to store the previous position
+    this.velocity = createVector(random(-2, 2), random(-2, 2));
+    this.acceleration = createVector();
+    this.lifespan = 255;
+    this.hue = random(255);
   }
 
+  attract(force) {
+    this.acceleration.add(force);
+  }
+  // attract(mousePosition) {
+  //   // Calculate direction of force: from this particle's position towards the mouse position
+  //   let forceDirection = p5.Vector.sub(mousePosition, this.position); 
+  //   // Limiting the magnitude of the force to avoid very rapid movement
+  //   forceDirection.setMag(0.5);
+  //   // Apply this force to the particle's acceleration
+  //   this.acceleration.add(forceDirection);
+  // }
+
+
   update() {
-    this.position.add(this.velocity);  // Update position
-    this.lifespan -= 2;  // Decrease lifespan
-    this.hue += 0.1;  // Gradually change color
+    this.velocity.add(this.acceleration);
+    this.prevPos = this.position.copy(); // Store the current position before updating it
+    this.position.add(this.velocity);
+    this.acceleration.mult(0.7);
+    this.lifespan -= 4; // They fade faster
+    this.hue = (this.hue + 1) % 255; // Cycle hue values
   }
 
   display() {
+    strokeWeight(4); // Make the line thicker
+    stroke(this.hue, 255, 255, this.lifespan);
+    line(this.position.x, this.position.y, this.prevPos.x, this.prevPos.y); // Draw a line from previous position to current position
     noStroke();
-    fill(this.hue, 100, 100, this.lifespan);  // Use color and lifespan to set fill
-    ellipse(this.position.x, this.position.y, 8);  // Draw a circle at the particle's position
   }
 
   isDead() {
-    return this.lifespan < 0;  // If the lifespan is less than 0, the particle is dead
+    return this.lifespan < 0;
   }
 }
