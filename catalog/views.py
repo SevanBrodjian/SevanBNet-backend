@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import Http404
 
-from .models import Topic, Project, Association, BlogPost
+from .models import Topic, Project, Association, BlogPost, Publication
 
 
 def home(request):
@@ -22,6 +22,10 @@ def home(request):
     }
 
     return render(request, 'home.html', context=context)
+
+def publications(request):
+    publications = Publication.objects.all()
+    return render(request, 'publications.html', {'publications': publications})
 
 def resume(request):
     return render(request, 'resume.html', {})

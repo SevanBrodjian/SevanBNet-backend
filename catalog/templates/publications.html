@@ -1,0 +1,76 @@
+{% extends "base_generic.html" %}
+
+{% block title %}<title>SevanB Publications</title>{% endblock %}
+
+{% block img %}
+    {% load static %}
+    <div
+        class="bg-image text-light"
+        style="
+        background-image: url('{% static 'cosmicweb2.jpg' %}');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center center;
+        min-height: 100vh;
+        "
+    >
+{% endblock %}
+
+{% block homenavtxt %}Home{% endblock %}
+{% block projectsnavtxt %}Projects{% endblock %}
+{% block blognavtxt %}Blog{% endblock %}
+{% block pubsnavtxt %}<strong>Publications</strong>{% endblock %}
+{% block resumenavtxt %}CV{% endblock %}
+{% block contactnavtxt %}Contact{% endblock %}
+
+{% block content %}
+    <br><br>
+    <div class='container-fluid d-flex justify-content-center'>
+        <h1 class='display-1'><strong>Publications</strong></h1>
+    </div>
+    <br><br>
+    <div class='container'>
+        
+        {% for publication in publications %}
+            <div class='px-5 py-4 rounded fs-5' style="background-color: rgba(0, 0, 0, 0.70);">
+                <h2>{{ publication.title }}</h2>
+                {% if publication.journal_name %}
+                    <h3>{{ publication.journal_name }}</h3>
+                {% endif %}
+                {% if publication.first_author %}
+                    <p><em>*First Author</em></p>
+                {% endif %}
+                <p><em>{{ publication.status }}</em></p>
+                <p>{{ publication.description }}</p>
+                
+                <!-- {% if publication.authors.all %}
+                    <p><strong>Authors:</strong> {{ publication.authors.all|join:", " }}</p>
+                {% endif %} -->
+                {% if publication.doi %}
+                    <p><strong>DOI:</strong> {{ publication.doi }}</p>
+                {% endif %}
+                {% if publication.url %}
+                    <p><a href="{{ publication.url }}">Link to publication</a></p>
+                {% endif %}
+                {% if publication.citation %}
+                    <p><strong>Citation:</strong> {{ publication.citation }}</p>
+                {% endif %}
+                {% if publication.submission_date %}
+                    <p><strong>Submission Date:</strong> {{ publication.submission_date|date:"Y-m-d" }}</p>
+                {% endif %}
+                {% if publication.publication_date %}
+                    <p><strong>Publication Date:</strong> {{ publication.publication_date|date:"Y-m-d" }}</p>
+                {% endif %}
+                {% if publication.association.all %}
+                    <p><strong>Associated With:</strong> {{ publication.association.all|join:", " }}</p>
+                {% endif %}
+                {% if publication.topic.all %}
+                    <p><strong>Keywords:</strong> {{ publication.topic.all|join:", " }}</p>
+                {% endif %}
+            </div>
+            <br><br>
+        {% endfor %}
+        
+        <br><br>
+    </div>
+{% endblock %}
