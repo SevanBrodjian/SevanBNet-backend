@@ -25,7 +25,7 @@ class Project(models.Model):
     """Model representing a project"""
     title = models.CharField(max_length=100)
     independent = models.BooleanField()
-    description = models.TextField(blank=True, max_length=3000, null=True)
+    description = models.TextField(blank=True, null=True)
     start = models.DateField(default=timezone.now)
     end = models.DateField(blank=True, null=True)
     ongoing = models.BooleanField()
