@@ -8,16 +8,25 @@ function setup() {
   background(0);
 }
 
+function mulVecs(vectorA, vectorB){
+  return createVector(vectorA.x * vectorB.x, vectorA.y * vectorB.y);
+}
+
 function draw() {
   // Clear the background more aggressively to avoid buildup, adjust alpha as needed
-  background(0, 0, 0, 20);
+  background(30, 0, 0, 30);
 
   let forceDirection = createVector(mouseX - width / 2, mouseY - height / 2);
   forceDirection.normalize().mult(0.1); // Reduced force to cursor
+  drivingVector = createVector(0, 0.2)
+  forceDirection.add(drivingVector)
 
   // Reduce particle count
-  if (particles.length < 90) { 
-    particles.push(new Particle());
+  if (particles.length < 2000) { 
+    particles.push(new Particle(forceDirection));
+    if(random(1) > 0.7){
+      particles.push(new Particle(forceDirection));
+    }
   }
 
   for (let i = particles.length - 1; i >= 0; i--) {
@@ -50,13 +59,14 @@ function draw() {
 // }
 
 class Particle {
-  constructor() {
+  constructor(forceDirection) {
     this.position = createVector(random(width), random(height));
     this.prevPos = this.position.copy(); // New property to store the previous position
-    this.velocity = createVector(random(-2, 2), random(-2, 2));
+    this.velocity = forceDirection.mult(0.4); //createVector(random(-1, 1), random(-1, 1));
     this.acceleration = createVector();
     this.lifespan = 255;
     this.hue = random(255);
+    this.size = random(1.5, 3.5)
   }
 
   attract(force) {
@@ -76,13 +86,13 @@ class Particle {
     this.velocity.add(this.acceleration);
     this.prevPos = this.position.copy(); // Store the current position before updating it
     this.position.add(this.velocity);
-    this.acceleration.mult(0.7);
-    this.lifespan -= 4; // They fade faster
-    this.hue = (this.hue + 1) % 255; // Cycle hue values
+    this.acceleration.mult(0.55);
+    this.lifespan -= random(18); // They fade faster
+    this.hue = (this.hue + 2) % 255; // Cycle hue values
   }
 
   display() {
-    strokeWeight(4); // Make the line thicker
+    strokeWeight(this.size); // Make the line thicker
     stroke(this.hue, 255, 255, this.lifespan);
     line(this.position.x, this.position.y, this.prevPos.x, this.prevPos.y); // Draw a line from previous position to current position
     noStroke();
