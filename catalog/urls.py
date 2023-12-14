@@ -12,5 +12,5 @@ urlpatterns = [
     path('resume/', views.resume, name='resume'),
     # path('contact/', views.contact, name='contact'),
     re_path(r'^projects/(?P<stub>[-\w]+)$', views.project_detail_view, name='project-detail'),
-    re_path(r'^blog/(?P<stub>[-\w]+)$', views.blog_post, name='blog-post'),
+    re_path(r'^blog/(?P<stub>[A-Za-z0-9-]+)$', views.blog_post, name='blog-post'),
 ]
