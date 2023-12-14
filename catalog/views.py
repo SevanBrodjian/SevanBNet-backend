@@ -60,7 +60,7 @@ def project_detail_view(request, stub):
 
 
 def blog_post(request, stub):
-    stub = stub.replace('-', ' ').replace('0', ':')
+    stub = stub.replace('0', ':').replace('-', ' ').replace('1', '-')
     blog_post = get_object_or_404(BlogPost, title=stub)
     return render(request, 'blog_post.html', context={'post': blog_post})
 
