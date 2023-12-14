@@ -54,7 +54,7 @@ class BlogPost(models.Model):
     content = models.TextField()
     image = models.CharField(max_length=500, blank=True, null=True)
     published_date = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(max_length=200, unique=False, blank=True, null=True)
+    slug = models.SlugField(max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # Generate slug only if it's a new post or the title has changed
