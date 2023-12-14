@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Topic(models.Model):
@@ -53,6 +54,13 @@ class BlogPost(models.Model):
     content = models.TextField()
     image = models.CharField(max_length=500, blank=True, null=True)
     published_date = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Generate slug only if it's a new post or the title has changed
+        if not self.slug or self.slug != slugify(self.title):
+            self.slug = slugify(self.title)
+        super(BlogPost, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['published_date']
@@ -62,8 +70,7 @@ class BlogPost(models.Model):
     
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this book."""
-        uri = self.title.replace(' ', '_')
-        return reverse('blog-post', args=[str(uri)])
+        return reverse('blog-post', args=[str(self.slug)])
 
 
 class Author(models.Model):

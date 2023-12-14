@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.http import Http404
 
@@ -9,19 +9,19 @@ def home(request):
     """View function for home page of site."""
 
     # Generate counts of some of the main objects
-    num_projects = Project.objects.all().count()
-    num_associations = Association.objects.all().count()
-    num_topics = Topic.objects.all().count()
-    num_ongoing = Project.objects.filter(ongoing__exact=True).count()
+    # num_projects = Project.objects.all().count()
+    # num_associations = Association.objects.all().count()
+    # num_topics = Topic.objects.all().count()
+    # num_ongoing = Project.objects.filter(ongoing__exact=True).count()
 
-    context = {
-        'num_projects': num_projects,
-        'num_associations': num_associations,
-        'num_topics': num_topics,
-        'num_ongoing': num_ongoing,
-    }
+    # context = {
+    #     'num_projects': num_projects,
+    #     'num_associations': num_associations,
+    #     'num_topics': num_topics,
+    #     'num_ongoing': num_ongoing,
+    # }
 
-    return render(request, 'home.html', context=context)
+    return render(request, 'home.html')#, context=context)
 
 def publications(request):
     publications = Publication.objects.all()
@@ -60,12 +60,7 @@ def project_detail_view(request, stub):
 
 
 def blog_post(request, stub):
-    stub=stub.replace('_', ' ')
-    try:
-        blog_post = BlogPost.objects.get(title=stub)
-    except BlogPost.DoesNotExist:
-        raise Http404('Blog post does not exist')
-    
+    blog_post = get_object_or_404(BlogPost, slug=stub)
     return render(request, 'blog_post.html', context={'post': blog_post})
 
 
