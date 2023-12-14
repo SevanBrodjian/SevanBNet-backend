@@ -54,13 +54,13 @@ class BlogPost(models.Model):
     content = models.TextField()
     image = models.CharField(max_length=500, blank=True, null=True)
     published_date = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(max_length=200, blank=True, null=True)
+    # slug = models.SlugField(max_length=200, blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        # Generate slug only if it's a new post or the title has changed
-        if not self.slug or self.slug != slugify(self.title):
-            self.slug = slugify(self.title)
-        super(BlogPost, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Generate slug only if it's a new post or the title has changed
+    #     if not self.slug or self.slug != slugify(self.title):
+    #         self.slug = slugify(self.title)
+    #     super(BlogPost, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['published_date']
@@ -70,7 +70,8 @@ class BlogPost(models.Model):
     
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this book."""
-        return reverse('blog-post', args=[str(self.slug)])
+        stub = self.title.replace('_', ' ').replace(':', '')
+        return reverse('blog-post', args=[str(stub)])
 
 
 class Author(models.Model):
