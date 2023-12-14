@@ -70,7 +70,7 @@ class BlogPost(models.Model):
     
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this book."""
-        stub = self.title.replace('_', ' ').replace(':', '')
+        stub = self.title.replace(' ', '-').replace(':', '')
         return reverse('blog-post', args=[str(stub)])
 
 
