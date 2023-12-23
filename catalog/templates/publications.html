@@ -40,7 +40,9 @@
                 {% if publication.first_author %}
                     <p><em>*First Author</em></p>
                 {% endif %}
-                <p class="fs-4"><em>{{ publication.authors_str }}</em></p>
+                {% if publication.authors_str %}
+                    <p class="fs-4"><em>{{ publication.authors_str }}</em></p>
+                {% endif %}
                 <p class="fs-4"><em>{% for author in publication.authors.all %}
                     {{ author.first_name }} {{ author.last_name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}</em></p>
