@@ -30,10 +30,10 @@ class Project(models.Model):
     start = models.DateField(default=timezone.now)
     end = models.DateField(blank=True, null=True)
     ongoing = models.BooleanField()
-    topic = models.ManyToManyField(Topic, blank=True, null=True)
+    topic = models.ManyToManyField(Topic, blank=True)
     img = models.CharField(max_length=500, blank=True, null=True) #models.ImageField(upload_to='img', max_length=None)
     link = models.CharField(max_length=500, blank=True, null=True)
-    association = models.ManyToManyField(Association, blank=True, null=True)
+    association = models.ManyToManyField(Association, blank=True)
 
     class Meta:
         ordering = ['-ongoing', '-end', 'title']
@@ -77,7 +77,7 @@ class BlogPost(models.Model):
 class Author(models.Model):
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=40, blank=True, null=True)
-    association = models.ManyToManyField(Association, blank=True, null=True)
+    association = models.ManyToManyField(Association, blank=True)
     url = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
@@ -96,12 +96,14 @@ class Publication(models.Model):
     submission_date = models.DateTimeField(blank=True, null=True)
     publication_date = models.DateTimeField(blank=True, null=True)
     first_author = models.BooleanField()
-    authors = models.ManyToManyField(Author, blank=True, null=True)
-    association = models.ManyToManyField(Association, blank=True, null=True)
-    topic = models.ManyToManyField(Topic, blank=True, null=True)
+    authors = models.ManyToManyField(Author, blank=True)
+    authors_str = models.CharField(max_length=400, blank=True, null=True)
+    association = models.ManyToManyField(Association, blank=True)
+    topic = models.ManyToManyField(Topic, blank=True)
+    rank = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ['-publication_date', '-submission_date', 'title']
+        ordering = ['rank', '-publication_date', '-submission_date', 'title']
 
     def __str__(self):
         return self.title

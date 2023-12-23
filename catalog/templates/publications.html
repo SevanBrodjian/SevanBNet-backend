@@ -40,12 +40,12 @@
                 {% if publication.first_author %}
                     <p><em>*First Author</em></p>
                 {% endif %}
+                <p class="fs-4"><em>{{ publication.authors_str }}</em></p>
+                <p class="fs-4"><em>{% for author in publication.authors.all %}
+                    {{ author.first_name }} {{ author.last_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}</em></p>
                 <p><em>{{ publication.status }}</em></p>
                 <p>{{ publication.description }}</p>
-                
-                <!-- {% if publication.authors.all %}
-                    <p><strong>Authors:</strong> {{ publication.authors.all|join:", " }}</p>
-                {% endif %} -->
                 {% if publication.doi %}
                     <p><strong>DOI:</strong> {{ publication.doi }}</p>
                 {% endif %}
