@@ -35,19 +35,19 @@
             <div class='px-5 py-4 rounded fs-5' style="background-color: rgba(0, 0, 0, 0.70);">
                 <h2>{{ publication.title }}</h2>
                 {% if publication.journal_name %}
-                    <h3>{{ publication.journal_name }}</h3>
+                    <h3>{{ publication.journal_name|safe|linebreaksbr  }}</h3>
                 {% endif %}
                 {% if publication.first_author %}
                     <p><em>*First Author</em></p>
                 {% endif %}
                 {% if publication.authors_str %}
-                    <p class="fs-4"><em>{{ publication.authors_str }}</em></p>
+                    <p class="fs-4"><em>{{ publication.authors_str|safe|linebreaksbr  }}</em></p>
                 {% endif %}
                 <p class="fs-4"><em>{% for author in publication.authors.all %}
                     {{ author.first_name }} {{ author.last_name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}</em></p>
-                <p><em>{{ publication.status }}</em></p>
-                <p>{{ publication.description }}</p>
+                <p><em>{{ publication.status|safe|linebreaksbr  }}</em></p>
+                <p>{{ publication.description|safe|linebreaksbr  }}</p>
                 {% if publication.doi %}
                     <p><strong>DOI:</strong> {{ publication.doi }}</p>
                 {% endif %}

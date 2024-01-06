@@ -88,7 +88,7 @@ class Author(models.Model):
 class Publication(models.Model):
     title = models.CharField(max_length=200)
     journal_name = models.CharField(max_length=200, blank=True, null=True)
-    status = models.CharField(max_length=200)
+    status = models.CharField(max_length=1000)
     description = models.TextField()
     citation = models.TextField(blank=True, null=True)
     doi = models.CharField(max_length=200, blank=True, null=True)
