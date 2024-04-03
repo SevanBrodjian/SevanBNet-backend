@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Topic, Association, Project, BlogPost, Publication, Author
 
+
 # Register your models here.
 admin.site.register(Topic)
 admin.site.register(Association)
