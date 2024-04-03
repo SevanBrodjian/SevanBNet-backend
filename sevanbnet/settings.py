@@ -27,8 +27,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ["web-production-701d.up.railway.app", "sevanb.net", "127.0.0.1", "www.sevanb.net", "containers-us-west-176.railway.app"]
-CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app', 'https://www.sevanb.net', 'https://containers-us-west-176.railway.app']
+ALLOWED_HOSTS = ["web-production-701d.up.railway.app", "sevanb.net", "127.0.0.1", "www.sevanb.net"]
+CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app', 'https://www.sevanb.net']
 
 # Application definition
 
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'catalog.apps.CatalogConfig',
+    'sevanbnet.apps.SevanBNetConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,7 +140,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = '/staticfiles/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'catalog/static'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'sevanbnet/static'),)
 
 # Simplified static file serving.
 # https://pypi.org/project/whitenoise/

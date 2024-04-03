@@ -1,34 +1,23 @@
-"""sevanbnet URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path, re_path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.staticfiles.storage import staticfiles_storage
+from django.urls import path, re_path
+from django.conf.urls.static import static
 from django.views.static import serve
-from catalog import views
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('catalog.urls')),
-    # path('', views.home, name='home'),
     path('', RedirectView.as_view(url='home/', permanent=True)),
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
     re_path(r'^staticfiles/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+    path('home/', views.home, name='home'),
+    path('projects/', views.ProjectListView.as_view(), name='projects'),
+    path('blog/', views.blog, name='blog'),
+    path('research/', views.research, name='research'),
+    re_path(r'^projects/(?P<stub>[-\w]+)$', views.project_detail_view, name='project-detail'),
+    re_path(r'^blog/(?P<stub>[A-Za-z0-9-]+)$', views.blog_post, name='blog-post'),
 ]
 
 if settings.DEBUG:
