@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.http import Http404
+from rest_framework import viewsets
 
 from .models import Topic, Project, Association, BlogPost, Publication
+from .serializers import BlogPostSerializer, ProjectSerializer
 
 
 def home(request):
@@ -26,7 +28,7 @@ def home(request):
 
 def research(request):
     publications = Publication.objects.all()
-    return render(request, 'research1.html', {'publications': publications})
+    return render(request, 'research.html', {'publications': publications})
 
 
 def resume(request):
@@ -72,3 +74,13 @@ def blog_post(request, stub):
 def blog(request):
     blog_posts = BlogPost.objects.all().order_by('-published_date')
     return render(request, 'blog.html', {'blog_posts': blog_posts})
+
+
+class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+
+
+class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
