@@ -13,7 +13,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ["web-production-701d.up.railway.app", "sevanb.net", "127.0.0.1", "www.sevanb.net", "web-development-7dbd.up.railway.app"]
 CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app', 'https://www.sevanb.net', 'https://web-development-7dbd.up.railway.app']
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://web-development-7dbd.up.railway.app/", "https://web-production-701d.up.railway.app", "https://www.sevanb.net"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://web-development-7dbd.up.railway.app", "https://web-production-701d.up.railway.app", "https://www.sevanb.net"]
 
 # Application definition
 INSTALLED_APPS = [
