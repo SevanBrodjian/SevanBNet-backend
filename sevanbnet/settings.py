@@ -11,9 +11,18 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ["web-production-701d.up.railway.app", "sevanb.net", "127.0.0.1", "www.sevanb.net", "web-development-7dbd.up.railway.app"]
-CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app', 'https://www.sevanb.net', 'https://web-development-7dbd.up.railway.app']
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://web-development-7dbd.up.railway.app", "https://web-production-701d.up.railway.app", "https://www.sevanb.net"]
+ALLOWED_HOSTS = ["127.0.0.1", 
+                 "sevanbnet-backendend-development.up.railway.app", 
+                 "sevanbnet-backendend-production.up.railway.app"]
+
+CSRF_TRUSTED_ORIGINS = ["https://sevanbnet-backendend-development.up.railway.app", 
+                        "https://sevanbnet-backendend-production.up.railway.app"]
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 
+                        "https://sevanbnet-frontend-development.up.railway.app", 
+                        "https://sevanbnet-frontend-production.up.railway.app", 
+                        "https://www.sevanb.net", 
+                        "https://sevanb.net"]
 
 # Application definition
 INSTALLED_APPS = [
