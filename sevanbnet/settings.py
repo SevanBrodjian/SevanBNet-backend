@@ -15,7 +15,6 @@ ALLOWED_HOSTS = ["web-production-701d.up.railway.app", "sevanb.net", "127.0.0.1"
 CSRF_TRUSTED_ORIGINS = ['https://web-production-701d.up.railway.app', 'https://www.sevanb.net', 'https://web-development-7dbd.up.railway.app']
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

@@ -10,14 +10,17 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='home/', permanent=True)),
-    re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
-    re_path(r'^staticfiles/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+    
     path('home/', views.home, name='home'),
     path('projects/', views.ProjectListView.as_view(), name='projects'),
     path('blog/', views.blog, name='blog'),
     path('research/', views.research, name='research'),
+
     re_path(r'^projects/(?P<stub>[-\w]+)$', views.project_detail_view, name='project-detail'),
     re_path(r'^blog/(?P<stub>[A-Za-z0-9-]+)$', views.blog_post, name='blog-post'),
+
+    re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^staticfiles/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 ]
 
 if settings.DEBUG:

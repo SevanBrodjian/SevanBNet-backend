@@ -23,15 +23,19 @@ def home(request):
 
     return render(request, 'home.html')#, context=context)
 
+
 def research(request):
     publications = Publication.objects.all()
-    return render(request, 'research.html', {'publications': publications})
+    return render(request, 'research1.html', {'publications': publications})
+
 
 def resume(request):
     return render(request, 'resume.html', {})
 
+
 def contact(request):
     return render(request, 'contact.html', {})
+
 
 class ProjectListView(generic.ListView):
     model = Project
