@@ -12,11 +12,11 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ["127.0.0.1", 
-                 "sevanbnet-backendend-development.up.railway.app", 
-                 "sevanbnet-backendend-production.up.railway.app"]
+                 "sevanbnet-backend-development.up.railway.app", 
+                 "sevanbnet-backend-production.up.railway.app"]
 
-CSRF_TRUSTED_ORIGINS = ["https://sevanbnet-backendend-development.up.railway.app", 
-                        "https://sevanbnet-backendend-production.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["https://sevanbnet-backend-development.up.railway.app", 
+                        "https://sevanbnet-backend-production.up.railway.app"]
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 
                         "https://sevanbnet-frontend-development.up.railway.app", 
