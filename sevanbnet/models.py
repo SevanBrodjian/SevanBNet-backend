@@ -34,6 +34,7 @@ class Project(models.Model):
     img = models.CharField(max_length=500, blank=True, null=True) #models.ImageField(upload_to='img', max_length=None)
     link = models.CharField(max_length=500, blank=True, null=True)
     association = models.ManyToManyField(Association, blank=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
 
     class Meta:
         ordering = ['-ongoing', '-end', 'title']
@@ -43,9 +44,13 @@ class Project(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        """Returns the URL to access a detail record for this book."""
-        uri = self.title.replace(' ', '_')
-        return reverse('project-detail', args=[str(uri)])
+        """Returns the URL to access a detail record for this project."""
+        return reverse('project-detail', args=[self.slug])
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class BlogPost(models.Model):
@@ -54,13 +59,7 @@ class BlogPost(models.Model):
     content = models.TextField()
     image = models.CharField(max_length=500, blank=True, null=True)
     published_date = models.DateTimeField(auto_now_add=True)
-    # slug = models.SlugField(max_length=200, blank=True, null=True)
-
-    # def save(self, *args, **kwargs):
-    #     # Generate slug only if it's a new post or the title has changed
-    #     if not self.slug or self.slug != slugify(self.title):
-    #         self.slug = slugify(self.title)
-    #     super(BlogPost, self).save(*args, **kwargs)
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
 
     class Meta:
         ordering = ['published_date']

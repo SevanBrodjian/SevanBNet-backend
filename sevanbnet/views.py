@@ -79,8 +79,10 @@ def blog(request):
 class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
+    lookup_field = 'slug'
 
 
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    lookup_field = 'slug'
