@@ -1,8 +1,6 @@
 {% extends "base_generic.html" %}
 
 {% block title %}<title>SevanB Projects</title>{% endblock %}
-{% block img %}
-{% endblock %}
 {% block homenavtxt %}Home{% endblock %}
 {% block projectsnavtxt %}<strong>Projects</strong>{% endblock %}
 {% block blognavtxt %}Blog{% endblock %}
@@ -64,7 +62,7 @@
         <p> Error: No projects found.</p>
     {% endif %}
     <br>
-
+    {% load static %}
     <script src="{% static 'scripts/particle_background.js' %}"></script>
 {% endblock %}
 
