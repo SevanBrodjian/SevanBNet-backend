@@ -13,7 +13,9 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ["127.0.0.1", 
                  "sevanbnet-backend-development.up.railway.app", 
-                 "sevanbnet-backend-production.up.railway.app"]
+                 "sevanbnet-backend-production.up.railway.app",
+                 "https://www.sevanb.net", 
+                 "https://sevanb.net"]
 
 CSRF_TRUSTED_ORIGINS = ["https://sevanbnet-backend-development.up.railway.app", 
                         "https://sevanbnet-backend-production.up.railway.app"]
