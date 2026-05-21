@@ -36,6 +36,8 @@
       min-height: 100vh;
     }
 
+    .hidden { display: none !important; }
+
     /* ── Header ── */
     header {
       position: sticky; top: 0; z-index: 100;
@@ -65,7 +67,7 @@
       background: var(--surface);
       border-bottom: 1px solid var(--border);
     }
-    #new-form-panel.open { max-height: 420px; }
+    #new-form-panel.open { max-height: 480px; }
 
     #new-form {
       padding: 1.5rem 2rem 1.75rem;
@@ -78,21 +80,26 @@
       font-size: .7rem; text-transform: uppercase;
       letter-spacing: .07em; color: var(--text-muted); font-weight: 500;
     }
-    .fg input[type="text"], .fg input[type="url"] {
+    .fg input[type="text"], .fg input[type="url"],
+    .fg select {
       background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text); padding: .48rem .7rem; border-radius: 6px;
       font-size: .88rem; outline: none; transition: border-color .15s;
-      width: 100%;
+      width: 100%; appearance: none; -webkit-appearance: none;
     }
-    .fg input[type="text"]:focus, .fg input[type="url"]:focus { border-color: var(--accent); }
+    .fg input[type="text"]:focus, .fg input[type="url"]:focus,
+    .fg select:focus { border-color: var(--accent); }
     .fg input[name="short_code"] { font-family: var(--mono); }
 
-    .color-row {
-      display: flex; align-items: center; gap: .75rem;
+    .form-row {
       grid-column: 1 / -1;
+      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
     }
-    .color-row span { font-size: .7rem; text-transform: uppercase;
-      letter-spacing: .07em; color: var(--text-muted); font-weight: 500; }
+    .form-row-label {
+      font-size: .7rem; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); font-weight: 500;
+      white-space: nowrap;
+    }
     .color-pair { display: flex; align-items: center; gap: .4rem; }
     .color-pair label { font-size: .78rem; color: var(--text-muted); }
     input[type="color"] {
@@ -184,10 +191,12 @@
     .card-qr {
       display: flex; justify-content: center; align-items: center;
       padding: 1.25rem 1rem; background: var(--surface-2);
+      position: relative;
     }
     .qr-img {
       width: 160px; height: 160px;
       image-rendering: pixelated; border-radius: 4px;
+      transition: opacity .2s;
     }
 
     /* Short URL */
@@ -221,21 +230,65 @@
     }
     .save-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* Colors */
-    .colors-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
-    .color-controls { display: flex; align-items: center; gap: .45rem; }
-    .color-controls span { font-size: .72rem; color: var(--text-muted); }
+    /* ── Appearance section ── */
+    .appearance-row {
+      display: flex; align-items: center; gap: .4rem; flex-wrap: wrap;
+    }
+    .style-select {
+      background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); padding: .28rem .5rem; border-radius: 4px;
+      font-size: .78rem; outline: none; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      transition: border-color .15s;
+    }
+    .style-select:focus { border-color: var(--accent); }
+
+    .transp-label {
+      display: flex; align-items: center; gap: .28rem;
+      font-size: .72rem; color: var(--text-muted);
+      cursor: pointer; white-space: nowrap; user-select: none;
+    }
+    .transp-chk {
+      width: 13px; height: 13px;
+      accent-color: var(--accent);
+      cursor: pointer; flex-shrink: 0;
+    }
+
+    .radius-row {
+      display: flex; align-items: center; gap: .5rem;
+      margin-top: .5rem;
+    }
+    .radius-label { font-size: .72rem; color: var(--text-muted); white-space: nowrap; }
+    input[type="range"] {
+      -webkit-appearance: none; appearance: none;
+      flex: 1; height: 4px; background: var(--border-2);
+      border-radius: 2px; outline: none; cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--accent); cursor: pointer; border: none;
+    }
+    .radius-val { font-size: .72rem; color: var(--text-muted); min-width: 28px; text-align: right; }
+
+    .apply-row {
+      display: flex; align-items: center; gap: .5rem; margin-top: .55rem;
+    }
     .apply-btn {
       background: none; border: 1px solid var(--border);
-      color: var(--text-muted); padding: .22rem .5rem;
-      border-radius: 4px; font-size: .72rem; cursor: pointer;
-      transition: color .15s, border-color .15s;
+      color: var(--text-muted); padding: .28rem .6rem;
+      border-radius: 4px; font-size: .75rem; cursor: pointer;
+      transition: color .15s, border-color .15s; flex-shrink: 0;
     }
     .apply-btn:hover { color: var(--accent); border-color: var(--accent); }
     .dl-btn {
       color: var(--text-muted); font-size: .72rem;
       text-decoration: none; border: 1px solid var(--border);
-      padding: .22rem .55rem; border-radius: 4px;
+      padding: .28rem .6rem; border-radius: 4px;
       transition: color .15s, border-color .15s; white-space: nowrap;
     }
     .dl-btn:hover { color: var(--accent); border-color: var(--accent); }
@@ -281,7 +334,7 @@
       #cards-grid { grid-template-columns: 1fr; }
       #new-form   { grid-template-columns: 1fr; }
       .fg.span2   { grid-column: 1; }
-      .color-row  { grid-column: 1; flex-wrap: wrap; }
+      .form-row   { grid-column: 1; }
       .form-actions { grid-column: 1; }
     }
   </style>
@@ -290,7 +343,6 @@
 
 <header>
   <div class="header-title">
-    <!-- simple QR icon -->
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <rect x="2"  y="2"  width="8" height="8" rx="1"/><rect x="14" y="2"  width="8" height="8" rx="1"/>
       <rect x="2"  y="14" width="8" height="8" rx="1"/>
@@ -320,8 +372,21 @@
       <label for="f-url">Target URL</label>
       <input id="f-url" name="target_url" type="url" placeholder="https://..." required>
     </div>
-    <div class="color-row">
-      <span>QR Colors</span>
+    <div class="fg">
+      <label for="f-style">Module Style</label>
+      <select id="f-style" name="qr_style">
+        <option value="square">Square</option>
+        <option value="rounded">Rounded</option>
+        <option value="circle">Circle</option>
+        <option value="gapped">Gapped</option>
+      </select>
+    </div>
+    <div class="fg" id="f-radius-group" style="display:none">
+      <label for="f-radius">Corner Radius <span id="f-radius-val">0.50</span></label>
+      <input id="f-radius" name="qr_radius" type="range" min="0" max="1" step="0.05" value="0.5">
+    </div>
+    <div class="form-row">
+      <span class="form-row-label">QR Colors</span>
       <div class="color-pair">
         <label>Foreground</label>
         <input name="fg_color" type="color" value="#000000">
@@ -330,6 +395,9 @@
         <label>Background</label>
         <input name="bg_color" type="color" value="#ffffff">
       </div>
+      <label class="transp-label">
+        <input type="checkbox" name="bg_transparent" class="transp-chk"> Transparent bg
+      </label>
     </div>
     <div class="form-actions">
       <button type="submit" class="btn-primary">Create Redirect</button>
@@ -349,9 +417,28 @@
 <script>
   const QR_BASE = "{{ qr_base_url }}";
 
-  // ── CSRF ──────────────────────────────────────────────────────────────────
+  // ── Utilities ─────────────────────────────────────────────────────────────
   function csrf() {
     return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+  }
+
+  function esc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                          .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function debounce(fn, ms) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+  }
+
+  function toast(msg, type = '') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    document.getElementById('toast-container').appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
   }
 
   // ── API ───────────────────────────────────────────────────────────────────
@@ -366,64 +453,60 @@
       if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
       return body;
     },
-    list:   ()       => API.call('/api/qr/redirects/'),
-    create: (d)      => API.call('/api/qr/redirects/', { method: 'POST',   body: JSON.stringify(d) }),
-    patch:  (id, d)  => API.call(`/api/qr/redirects/${id}/`, { method: 'PATCH',  body: JSON.stringify(d) }),
-    del:    (id)     => API.call(`/api/qr/redirects/${id}/`, { method: 'DELETE' }),
+    list:   ()      => API.call('/api/qr/redirects/'),
+    create: (d)     => API.call('/api/qr/redirects/', { method: 'POST',   body: JSON.stringify(d) }),
+    patch:  (id, d) => API.call(`/api/qr/redirects/${id}/`, { method: 'PATCH',  body: JSON.stringify(d) }),
+    del:    (id)    => API.call(`/api/qr/redirects/${id}/`, { method: 'DELETE' }),
   };
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
-  function esc(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
-                          .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function toast(msg, type = '') {
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.textContent = msg;
-    document.getElementById('toast-container').appendChild(t);
-    requestAnimationFrame(() => t.classList.add('show'));
-    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
-  }
-
-  // ── Sparkline SVG ─────────────────────────────────────────────────────────
+  // ── Sparkline ─────────────────────────────────────────────────────────────
   function sparkline(days) {
-    if (!days || !days.length) return '';
+    if (!days?.length) return '';
     const W = 168, H = 34, gap = 1;
     const bw  = Math.floor((W - gap * (days.length - 1)) / days.length);
     const max = Math.max(...days.map(d => d.count), 1);
     const bars = days.map((d, i) => {
       const bh = d.count === 0 ? 2 : Math.max(Math.round((d.count / max) * H), 3);
-      const x  = i * (bw + gap), y = H - bh;
-      return `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="1"
+      return `<rect x="${i*(bw+gap)}" y="${H-bh}" width="${bw}" height="${bh}" rx="1"
                 fill="var(--accent)" fill-opacity="${d.count ? .75 : .15}"/>`;
     }).join('');
     return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bars}</svg>`;
   }
 
-  // ── Render a card ─────────────────────────────────────────────────────────
+  // ── Image URL builder ─────────────────────────────────────────────────────
+  function imgUrl(id, fg, bg, style, radius, transparent, download = false) {
+    const p = new URLSearchParams({
+      fg, bg, style,
+      radius: parseFloat(radius).toFixed(2),
+      transparent: transparent ? '1' : '0',
+      t: Date.now(),
+    });
+    if (download) p.set('download', '1');
+    return `/api/qr/image/${id}/?${p}`;
+  }
+
+  // ── Card HTML ─────────────────────────────────────────────────────────────
   function cardHTML(r) {
-    const shortUrl  = `${QR_BASE}/r/${r.short_code}/`;
-    const imgSrc    = `/api/qr/image/${r.id}/`;
-    const dlHref    = `/api/qr/image/${r.id}/?download=1`;
-    const created   = new Date(r.created_at).toLocaleDateString('en-US',
-                      { year:'numeric', month:'short', day:'numeric' });
-    const scanWord  = r.total_scans === 1 ? 'scan' : 'scans';
+    const shortUrl = `${QR_BASE}/r/${r.short_code}/`;
+    const created  = new Date(r.created_at).toLocaleDateString('en-US',
+                     { year:'numeric', month:'short', day:'numeric' });
+    const scanWord = r.total_scans === 1 ? 'scan' : 'scans';
+    const radVal   = parseFloat(r.qr_radius).toFixed(2);
 
     return `
     <div class="card ${r.is_active ? '' : 'inactive'}" data-id="${r.id}">
+
       <div class="card-section card-header">
         <input class="label-input" value="${esc(r.label)}"
                data-orig="${esc(r.label)}" placeholder="Label" title="Click to edit label">
-        <label class="toggle-switch" title="${r.is_active ? 'Active – click to deactivate' : 'Inactive – click to activate'}">
+        <label class="toggle-switch" title="${r.is_active ? 'Active' : 'Inactive'}">
           <input type="checkbox" class="toggle-chk" ${r.is_active ? 'checked' : ''}>
           <span class="toggle-track"><span class="toggle-thumb"></span></span>
         </label>
       </div>
 
       <div class="card-section card-qr">
-        <img class="qr-img" src="${imgSrc}" alt="QR code for ${esc(r.short_code)}" loading="lazy">
+        <img class="qr-img" src="/api/qr/image/${r.id}/" alt="QR code" loading="lazy">
       </div>
 
       <div class="card-section">
@@ -442,14 +525,28 @@
       </div>
 
       <div class="card-section">
-        <div class="colors-row">
-          <div class="color-controls">
-            <span>QR</span>
-            <input type="color" class="clr-fg" value="${esc(r.fg_color)}">
-            <input type="color" class="clr-bg" value="${esc(r.bg_color)}">
-            <button class="apply-btn">↻ Apply</button>
-          </div>
-          <a class="dl-btn" href="${dlHref}" download="qr-${esc(r.short_code)}.png">⬇ PNG</a>
+        <div class="appearance-row">
+          <select class="style-select">
+            <option value="square"  ${r.qr_style==='square'  ?'selected':''}>Square</option>
+            <option value="rounded" ${r.qr_style==='rounded' ?'selected':''}>Rounded</option>
+            <option value="circle"  ${r.qr_style==='circle'  ?'selected':''}>Circle</option>
+            <option value="gapped"  ${r.qr_style==='gapped'  ?'selected':''}>Gapped</option>
+          </select>
+          <input type="color" class="clr-fg" value="${esc(r.fg_color)}" title="Foreground">
+          <input type="color" class="clr-bg" value="${esc(r.bg_color)}" title="Background">
+          <label class="transp-label" title="Transparent background">
+            <input type="checkbox" class="transp-chk" ${r.bg_transparent ? 'checked' : ''}>
+            Transp
+          </label>
+        </div>
+        <div class="radius-row ${r.qr_style !== 'rounded' ? 'hidden' : ''}">
+          <span class="radius-label">Radius</span>
+          <input type="range" class="radius-slider" min="0" max="1" step="0.05" value="${r.qr_radius}">
+          <span class="radius-val">${radVal}</span>
+        </div>
+        <div class="apply-row">
+          <button class="apply-btn">↻ Apply</button>
+          <a class="dl-btn" href="/api/qr/image/${r.id}/?download=1" download="qr-${esc(r.short_code)}.png">⬇ PNG</a>
         </div>
       </div>
 
@@ -483,33 +580,27 @@
       try {
         await API.patch(r.id, { is_active: this.checked });
         card.classList.toggle('inactive', !this.checked);
-        this.closest('.toggle-switch').title = this.checked
-          ? 'Active – click to deactivate' : 'Inactive – click to activate';
+        this.closest('.toggle-switch').title = this.checked ? 'Active' : 'Inactive';
       } catch(e) {
         this.checked = !this.checked;
         toast(`Error: ${e.message}`, 'err');
       }
     });
 
-    // ── Label (save on blur / Enter)
+    // ── Label
     const labelEl = card.querySelector('.label-input');
     const saveLabel = async () => {
       const v = labelEl.value.trim();
       if (!v || v === labelEl.dataset.orig) return;
-      try {
-        await API.patch(r.id, { label: v });
-        labelEl.dataset.orig = v;
-      } catch(e) {
-        labelEl.value = labelEl.dataset.orig;
-        toast(`Error: ${e.message}`, 'err');
-      }
+      try { await API.patch(r.id, { label: v }); labelEl.dataset.orig = v; }
+      catch(e) { labelEl.value = labelEl.dataset.orig; toast(`Error: ${e.message}`, 'err'); }
     };
     labelEl.addEventListener('blur', saveLabel);
     labelEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); labelEl.blur(); } });
 
     // ── Target URL
-    const targetEl  = card.querySelector('.target-input');
-    const saveBtn   = card.querySelector('.save-btn');
+    const targetEl = card.querySelector('.target-input');
+    const saveBtn  = card.querySelector('.save-btn');
     const saveTarget = async () => {
       const v = targetEl.value.trim();
       if (!v || v === targetEl.dataset.orig) return;
@@ -520,8 +611,7 @@
         saveBtn.textContent = '✓';
         setTimeout(() => saveBtn.textContent = 'Save', 1600);
       } catch(e) {
-        targetEl.value = targetEl.dataset.orig;
-        saveBtn.textContent = 'Save';
+        targetEl.value = targetEl.dataset.orig; saveBtn.textContent = 'Save';
         toast(`Error: ${e.message}`, 'err');
       }
     };
@@ -537,22 +627,57 @@
       });
     });
 
-    // ── QR color refresh
-    const fgEl  = card.querySelector('.clr-fg');
-    const bgEl  = card.querySelector('.clr-bg');
-    const apBtn = card.querySelector('.apply-btn');
-    const qrImg = card.querySelector('.qr-img');
+    // ── Appearance controls + live preview
+    const styleEl   = card.querySelector('.style-select');
+    const fgEl      = card.querySelector('.clr-fg');
+    const bgEl      = card.querySelector('.clr-bg');
+    const transpEl  = card.querySelector('.transp-chk');
+    const radiusEl  = card.querySelector('.radius-slider');
+    const radiusVal = card.querySelector('.radius-val');
+    const radiusRow = card.querySelector('.radius-row');
+    const apBtn     = card.querySelector('.apply-btn');
+    const qrImg     = card.querySelector('.qr-img');
+    const dlBtn     = card.querySelector('.dl-btn');
+
+    // Live preview — dims QR, loads new version in background, swaps when ready
+    const livePreview = debounce(() => {
+      const src = imgUrl(r.id, fgEl.value, bgEl.value,
+                         styleEl.value, radiusEl.value, transpEl.checked);
+      qrImg.style.opacity = '0.45';
+      const tmp = new Image();
+      tmp.onload = () => { qrImg.src = tmp.src; qrImg.style.opacity = '1'; };
+      tmp.onerror = () => { qrImg.style.opacity = '1'; };
+      tmp.src = src;
+    }, 350);
+
+    styleEl.addEventListener('change', () => {
+      radiusRow.classList.toggle('hidden', styleEl.value !== 'rounded');
+      livePreview();
+    });
+    fgEl.addEventListener('input',    livePreview);
+    bgEl.addEventListener('input',    livePreview);
+    transpEl.addEventListener('change', livePreview);
+    radiusEl.addEventListener('input', () => {
+      radiusVal.textContent = parseFloat(radiusEl.value).toFixed(2);
+      livePreview();
+    });
+
+    // Apply — persists to DB and updates download link
     apBtn.addEventListener('click', async () => {
-      const fg = fgEl.value, bg = bgEl.value;
       try {
         apBtn.textContent = '…';
-        await API.patch(r.id, { fg_color: fg, bg_color: bg });
-        qrImg.src = `/api/qr/image/${r.id}/?fg=${encodeURIComponent(fg)}&bg=${encodeURIComponent(bg)}&t=${Date.now()}`;
-        // also update download link
-        const dlBtn = card.querySelector('.dl-btn');
-        dlBtn.href = `/api/qr/image/${r.id}/?download=1&fg=${encodeURIComponent(fg)}&bg=${encodeURIComponent(bg)}`;
+        await API.patch(r.id, {
+          fg_color:       fgEl.value,
+          bg_color:       bgEl.value,
+          qr_style:       styleEl.value,
+          qr_radius:      parseFloat(radiusEl.value),
+          bg_transparent: transpEl.checked,
+        });
+        dlBtn.href = imgUrl(r.id, fgEl.value, bgEl.value,
+                            styleEl.value, radiusEl.value, transpEl.checked, true);
+        dlBtn.download = `qr-${r.short_code}.png`;
         apBtn.textContent = '↻ Apply';
-        toast('QR updated', 'ok');
+        toast('Appearance saved', 'ok');
       } catch(e) {
         apBtn.textContent = '↻ Apply';
         toast(`Error: ${e.message}`, 'err');
@@ -561,8 +686,8 @@
 
     // ── Delete
     card.querySelector('.delete-btn').addEventListener('click', async () => {
-      const scanNote = r.total_scans ? ` and its ${r.total_scans} scan record${r.total_scans !== 1 ? 's' : ''}` : '';
-      if (!confirm(`Delete "${r.label}"${scanNote}? This cannot be undone.`)) return;
+      const note = r.total_scans ? ` and its ${r.total_scans} scan record${r.total_scans !== 1 ? 's' : ''}` : '';
+      if (!confirm(`Delete "${r.label}"${note}? This cannot be undone.`)) return;
       try {
         await API.del(r.id);
         card.style.transition = 'opacity .25s, transform .25s';
@@ -596,10 +721,23 @@
     const canBtn = document.getElementById('cancel-btn');
 
     const open  = () => { panel.classList.add('open');    newBtn.textContent = '✕ Cancel'; };
-    const close = () => { panel.classList.remove('open'); newBtn.textContent = '+ New Redirect'; form.reset(); };
+    const close = () => { panel.classList.remove('open'); newBtn.textContent = '+ New Redirect'; form.reset(); updateFormRadius(); };
 
     newBtn.addEventListener('click', () => panel.classList.contains('open') ? close() : open());
     canBtn.addEventListener('click', close);
+
+    // Show/hide radius row in new-form
+    const fStyle  = form.qr_style;
+    const fRGroup = document.getElementById('f-radius-group');
+    const fRadius = document.getElementById('f-radius');
+    const fRadVal = document.getElementById('f-radius-val');
+    function updateFormRadius() {
+      fRGroup.style.display = fStyle.value === 'rounded' ? '' : 'none';
+    }
+    fStyle.addEventListener('change', updateFormRadius);
+    fRadius.addEventListener('input', () => {
+      fRadVal.textContent = parseFloat(fRadius.value).toFixed(2);
+    });
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
@@ -607,11 +745,14 @@
       sub.disabled = true; sub.textContent = 'Creating…';
       try {
         await API.create({
-          label:      form.label.value.trim(),
-          short_code: form.short_code.value.trim(),
-          target_url: form.target_url.value.trim(),
-          fg_color:   form.fg_color.value,
-          bg_color:   form.bg_color.value,
+          label:          form.label.value.trim(),
+          short_code:     form.short_code.value.trim(),
+          target_url:     form.target_url.value.trim(),
+          fg_color:       form.fg_color.value,
+          bg_color:       form.bg_color.value,
+          qr_style:       form.qr_style.value,
+          qr_radius:      parseFloat(form.qr_radius.value),
+          bg_transparent: form.bg_transparent.checked,
         });
         close();
         await refresh();

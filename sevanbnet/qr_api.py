@@ -21,15 +21,18 @@ def _require_staff(view_func):
 
 def _serialize(qrr, include_chart=True):
     d = {
-        'id':          qrr.id,
-        'short_code':  qrr.short_code,
-        'label':       qrr.label,
-        'target_url':  qrr.target_url,
-        'is_active':   qrr.is_active,
-        'created_at':  qrr.created_at.isoformat(),
-        'fg_color':    qrr.fg_color,
-        'bg_color':    qrr.bg_color,
-        'total_scans': qrr.scans.count(),
+        'id':            qrr.id,
+        'short_code':    qrr.short_code,
+        'label':         qrr.label,
+        'target_url':    qrr.target_url,
+        'is_active':     qrr.is_active,
+        'created_at':    qrr.created_at.isoformat(),
+        'fg_color':      qrr.fg_color,
+        'bg_color':      qrr.bg_color,
+        'qr_style':      qrr.qr_style,
+        'qr_radius':     qrr.qr_radius,
+        'bg_transparent': qrr.bg_transparent,
+        'total_scans':   qrr.scans.count(),
     }
     if include_chart:
         end   = timezone.now().date()
@@ -76,6 +79,9 @@ def redirects_list(request):
             is_active=body.get('is_active', True),
             fg_color=body.get('fg_color', '#000000'),
             bg_color=body.get('bg_color', '#ffffff'),
+            qr_style=body.get('qr_style', 'square'),
+            qr_radius=float(body.get('qr_radius', 0.5)),
+            bg_transparent=bool(body.get('bg_transparent', False)),
         )
         return JsonResponse(_serialize(qrr), status=201)
 
@@ -94,7 +100,9 @@ def redirect_detail(request, pk):
             body = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        for field in ('label', 'target_url', 'is_active', 'fg_color', 'bg_color'):
+        for field in ('label', 'target_url', 'is_active',
+                      'fg_color', 'bg_color',
+                      'qr_style', 'qr_radius', 'bg_transparent'):
             if field in body:
                 setattr(qrr, field, body[field])
         qrr.save()
