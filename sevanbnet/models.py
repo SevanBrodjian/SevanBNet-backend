@@ -101,3 +101,45 @@ class Publication(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# ── QR Code Manager ──────────────────────────────────────────────────────────
+
+QR_STYLE_CHOICES = [
+    ('square',  'Square'),
+    ('rounded', 'Rounded'),
+    ('circle',  'Circle'),
+    ('gapped',  'Gapped'),
+]
+
+class QRRedirect(models.Model):
+    short_code     = models.SlugField(max_length=50, unique=True)
+    label          = models.CharField(max_length=200)
+    target_url     = models.URLField(max_length=2000)
+    is_active      = models.BooleanField(default=True)
+    created_at     = models.DateTimeField(auto_now_add=True)
+    fg_color       = models.CharField(max_length=7, default='#000000')
+    bg_color       = models.CharField(max_length=7, default='#ffffff')
+    qr_style       = models.CharField(max_length=10, choices=QR_STYLE_CHOICES, default='square')
+    qr_radius      = models.FloatField(default=0.5)
+    bg_transparent = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.label} ({self.short_code})"
+
+
+class Scan(models.Model):
+    redirect   = models.ForeignKey(QRRedirect, on_delete=models.CASCADE, related_name='scans')
+    timestamp  = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    referrer   = models.CharField(max_length=500, blank=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"Scan of {self.redirect.short_code} at {self.timestamp}"
