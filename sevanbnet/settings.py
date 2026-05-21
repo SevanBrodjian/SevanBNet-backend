@@ -11,11 +11,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ["127.0.0.1", 
-                 "sevanbnet-backend-development.up.railway.app", 
+ALLOWED_HOSTS = ["127.0.0.1",
+                 "sevanbnet-backend-development.up.railway.app",
                  "sevanbnet-backend-production.up.railway.app",
-                 "www.sevanb.net", 
-                 "sevanb.net"]
+                 "www.sevanb.net",
+                 "sevanb.net",
+                 "go.sevanb.net"]
 
 CSRF_TRUSTED_ORIGINS = ["https://sevanbnet-backend-development.up.railway.app", 
                         "https://sevanbnet-backend-production.up.railway.app"]
@@ -107,6 +108,11 @@ USE_TZ = True
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Public base URL embedded in generated QR codes.
+# Locally:    http://127.0.0.1:8000  (default)
+# Production: set QR_BASE_URL=https://go.sevanb.net in Railway env vars
+QR_BASE_URL = os.environ.get('QR_BASE_URL', 'http://127.0.0.1:8000')
 
 ALLOWED_UPLOAD_IMAGES = ('gif', 'bmp', 'jpeg', 'png')
 
