@@ -1,4 +1,4 @@
 [phases.setup]
 # psycopg2-binary is a pre-compiled wheel — no PostgreSQL dev headers needed.
 # Explicitly listing packages here prevents Nixpacks from auto-adding postgresql_16.dev.
-nixPkgs = ["python39"]
+nixPkgs = ["python312"]
