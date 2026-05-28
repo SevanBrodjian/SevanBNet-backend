@@ -88,6 +88,7 @@ class Publication(models.Model):
     citation = models.TextField(blank=True, null=True)
     doi = models.CharField(max_length=200, blank=True, null=True)
     url = models.CharField(max_length=200, blank=True, null=True)
+    site_path = models.CharField(max_length=200, blank=True, null=True)
     submission_date = models.DateTimeField(blank=True, null=True)
     publication_date = models.DateTimeField(blank=True, null=True)
     first_author = models.BooleanField()
