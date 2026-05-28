@@ -19,6 +19,6 @@ class PublicationSerializer(serializers.ModelSerializer):
         model = Publication
         fields = [
             'id', 'title', 'authors_str', 'journal_name', 'status',
-            'description', 'url', 'doi', 'site_path',
+            'description', 'img', 'url', 'doi', 'site_path', 'project_url',
             'publication_date', 'submission_date',
         ]
