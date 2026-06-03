@@ -3,12 +3,29 @@ from django.contrib import admin
 from .models import Topic, Association, Project, BlogPost, Publication, QRRedirect, Scan
 
 
-# Register your models here.
 admin.site.register(Topic)
 admin.site.register(Association)
-admin.site.register(Project)
-admin.site.register(BlogPost)
-admin.site.register(Publication)
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_published', 'start', 'end')
+    list_filter = ('is_published',)
+    list_editable = ('is_published',)
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_published', 'published_date')
+    list_filter = ('is_published',)
+    list_editable = ('is_published',)
+
+
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_published', 'status', 'publication_date')
+    list_filter = ('is_published',)
+    list_editable = ('is_published',)
 
 
 @admin.register(QRRedirect)

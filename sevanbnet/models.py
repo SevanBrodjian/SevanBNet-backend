@@ -27,6 +27,7 @@ class Project(models.Model):
     """Model representing a project"""
     title = models.CharField(max_length=100)
     independent = models.BooleanField()
+    is_published = models.BooleanField(default=True)
     description = models.TextField(blank=True, null=True)
     start = models.DateField(default=timezone.now)
     end = models.DateField(blank=True, null=True)
@@ -66,6 +67,7 @@ class BlogPost(models.Model):
     description = models.TextField()
     content = models.TextField()
     published_date = models.DateField(default=timezone.now)
+    is_published = models.BooleanField(default=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
 
     class Meta:
@@ -82,6 +84,7 @@ class BlogPost(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=200)
+    is_published = models.BooleanField(default=True)
     journal_name = models.CharField(max_length=200, blank=True, null=True)
     status = models.CharField(max_length=1000)
     description = models.TextField()
