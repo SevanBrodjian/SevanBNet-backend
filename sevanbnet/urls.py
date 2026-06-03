@@ -12,6 +12,7 @@ from . import qr_views, qr_api
 router = DefaultRouter()
 router.register(r'blogposts', views.BlogPostViewSet)
 router.register(r'projects', views.ProjectViewSet)
+router.register(r'publications', views.PublicationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

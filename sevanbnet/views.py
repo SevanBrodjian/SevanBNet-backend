@@ -4,7 +4,7 @@ from django.http import Http404
 from rest_framework import viewsets
 
 from .models import Topic, Project, Association, BlogPost, Publication
-from .serializers import BlogPostSerializer, ProjectSerializer
+from .serializers import BlogPostSerializer, ProjectSerializer, PublicationSerializer
 
 
 def home(request):
@@ -86,3 +86,8 @@ class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     lookup_field = 'slug'
+
+
+class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
