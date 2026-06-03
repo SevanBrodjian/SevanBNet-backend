@@ -27,7 +27,7 @@ def home(request):
 
 
 def research(request):
-    publications = Publication.objects.all()
+    publications = Publication.objects.filter(is_published=True)
     return render(request, 'research.html', {'publications': publications})
 
 
@@ -44,6 +44,7 @@ class ProjectListView(generic.ListView):
     context_object_name = 'projects'
     template_name = 'projects.html'
     paginate_by = 10
+    queryset = Project.objects.filter(is_published=True)
 
 
 def project_detail_view(request, stub):
@@ -72,22 +73,22 @@ def blog_post(request, stub):
 
 
 def blog(request):
-    blog_posts = BlogPost.objects.all().order_by('-published_date')
+    blog_posts = BlogPost.objects.filter(is_published=True).order_by('-published_date')
     return render(request, 'blog.html', {'blog_posts': blog_posts})
 
 
 class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = BlogPost.objects.all()
+    queryset = BlogPost.objects.filter(is_published=True)
     serializer_class = BlogPostSerializer
     lookup_field = 'slug'
 
 
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Project.objects.all()
+    queryset = Project.objects.filter(is_published=True)
     serializer_class = ProjectSerializer
     lookup_field = 'slug'
 
 
 class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Publication.objects.all()
+    queryset = Publication.objects.filter(is_published=True)
     serializer_class = PublicationSerializer
