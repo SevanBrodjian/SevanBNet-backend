@@ -1,12 +1,13 @@
+from django.conf import settings
 from django.db import models
-from django.urls import reverse
+from django.db.models import Case, Value, When
 from django.utils import timezone
-from django.db.models import Case, When, Value
 from django.utils.text import slugify
 
 
 class Topic(models.Model):
     """Model representing a project topic."""
+
     name = models.CharField(max_length=40)
 
     def __str__(self):
@@ -16,6 +17,7 @@ class Topic(models.Model):
 
 class Association(models.Model):
     """Model representing a project topic."""
+
     name = models.CharField(max_length=40)
 
     def __str__(self):
@@ -25,6 +27,7 @@ class Association(models.Model):
 
 class Project(models.Model):
     """Model representing a project"""
+
     title = models.CharField(max_length=100)
     independent = models.BooleanField()
     is_published = models.BooleanField(default=True)
@@ -32,7 +35,7 @@ class Project(models.Model):
     start = models.DateField(default=timezone.now)
     end = models.DateField(blank=True, null=True)
     topic = models.ManyToManyField(Topic, blank=True)
-    img = models.CharField(max_length=500, blank=True, null=True) 
+    img = models.CharField(max_length=500, blank=True, null=True)
     link = models.CharField(max_length=500, blank=True, null=True)
     association = models.ManyToManyField(Association, blank=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
@@ -44,22 +47,21 @@ class Project(models.Model):
                 default=Value(1),
                 output_field=models.IntegerField(),
             ),
-            '-end',
-            'title'
+            "-end",
+            "title",
         ]
 
     def __str__(self):
         """String for representing the Model object."""
         return self.title
 
-    def get_absolute_url(self):
-        """Returns the URL to access a detail record for this project."""
-        return reverse('project-detail', args=[self.slug])
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return f"{settings.SITE_URL}/projects/{self.slug}"
 
 
 class BlogPost(models.Model):
@@ -71,15 +73,13 @@ class BlogPost(models.Model):
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
 
     class Meta:
-        ordering = ['published_date']
+        ordering = ["published_date"]
 
     def __str__(self):
         return self.title
-    
+
     def get_absolute_url(self):
-        """Returns the URL to access a detail record for this book."""
-        stub = self.title.replace('-', '1').replace(' ', '-').replace(':', '0')
-        return reverse('blog-post', args=[str(stub)])
+        return f"{settings.SITE_URL}/blog/{self.slug}"
 
 
 class Publication(models.Model):
@@ -103,7 +103,7 @@ class Publication(models.Model):
     rank = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ['rank', '-publication_date', '-submission_date', 'title']
+        ordering = ["rank", "-publication_date", "-submission_date", "title"]
 
     def __str__(self):
         return self.title
@@ -112,40 +112,41 @@ class Publication(models.Model):
 # ── QR Code Manager ──────────────────────────────────────────────────────────
 
 QR_STYLE_CHOICES = [
-    ('square',  'Square'),
-    ('rounded', 'Rounded'),
-    ('circle',  'Circle'),
-    ('gapped',  'Gapped'),
+    ("square", "Square"),
+    ("rounded", "Rounded"),
+    ("circle", "Circle"),
+    ("gapped", "Gapped"),
 ]
 
+
 class QRRedirect(models.Model):
-    short_code     = models.SlugField(max_length=50, unique=True)
-    label          = models.CharField(max_length=200)
-    target_url     = models.URLField(max_length=2000)
-    is_active      = models.BooleanField(default=True)
-    created_at     = models.DateTimeField(auto_now_add=True)
-    fg_color       = models.CharField(max_length=7, default='#000000')
-    bg_color       = models.CharField(max_length=7, default='#ffffff')
-    qr_style       = models.CharField(max_length=10, choices=QR_STYLE_CHOICES, default='square')
-    qr_radius      = models.FloatField(default=0.5)
+    short_code = models.SlugField(max_length=50, unique=True)
+    label = models.CharField(max_length=200)
+    target_url = models.URLField(max_length=2000)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    fg_color = models.CharField(max_length=7, default="#000000")
+    bg_color = models.CharField(max_length=7, default="#ffffff")
+    qr_style = models.CharField(max_length=10, choices=QR_STYLE_CHOICES, default="square")
+    qr_radius = models.FloatField(default=0.5)
     bg_transparent = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.label} ({self.short_code})"
 
 
 class Scan(models.Model):
-    redirect   = models.ForeignKey(QRRedirect, on_delete=models.CASCADE, related_name='scans')
-    timestamp  = models.DateTimeField(auto_now_add=True)
+    redirect = models.ForeignKey(QRRedirect, on_delete=models.CASCADE, related_name="scans")
+    timestamp = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(blank=True)
-    referrer   = models.CharField(max_length=500, blank=True)
+    referrer = models.CharField(max_length=500, blank=True)
 
     class Meta:
-        ordering = ['-timestamp']
+        ordering = ["-timestamp"]
 
     def __str__(self):
         return f"Scan of {self.redirect.short_code} at {self.timestamp}"

@@ -8,12 +8,12 @@ from django.shortcuts import get_object_or_404, render
 
 from .models import QRRedirect, Scan
 
-
 # ── Image generation helpers ──────────────────────────────────────────────────
 
+
 def _hex_to_rgb(hex_str):
-    h = hex_str.lstrip('#')
-    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+    h = hex_str.lstrip("#")
+    return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
 
 
 def _make_qr_pil(qr_obj, fg, bg, style, radius, transparent):
@@ -22,21 +22,23 @@ def _make_qr_pil(qr_obj, fg, bg, style, radius, transparent):
     Styles: square | rounded | circle | gapped
     Transparency is applied as a post-process (replaces bg-coloured pixels).
     """
-    from PIL import Image as PILImage
 
     fg_rgb = _hex_to_rgb(fg)
     bg_rgb = _hex_to_rgb(bg)
 
-    if style in ('rounded', 'circle', 'gapped'):
+    if style in ("rounded", "circle", "gapped"):
         try:
             from qrcode.image.styledpil import StyledPilImage
             from qrcode.image.styles.colormasks import SolidFillColorMask  # plural
             from qrcode.image.styles.moduledrawers.pil import (
-                RoundedModuleDrawer, CircleModuleDrawer, GappedSquareModuleDrawer,
+                CircleModuleDrawer,
+                GappedSquareModuleDrawer,
+                RoundedModuleDrawer,
             )
-            if style == 'rounded':
+
+            if style == "rounded":
                 drawer = RoundedModuleDrawer(radius_ratio=min(max(float(radius), 0.0), 1.0))
-            elif style == 'circle':
+            elif style == "circle":
                 drawer = CircleModuleDrawer()
             else:
                 drawer = GappedSquareModuleDrawer()
@@ -47,14 +49,14 @@ def _make_qr_pil(qr_obj, fg, bg, style, radius, transparent):
                 eye_drawer=drawer,
                 color_mask=mask,
             ).get_image()
-        except Exception as e:
+        except Exception:
             # Graceful fallback to square
             pil = qr_obj.make_image(fill_color=fg, back_color=bg).get_image()
     else:
         pil = qr_obj.make_image(fill_color=fg, back_color=bg).get_image()
 
     if transparent:
-        pil = pil.convert('RGBA')
+        pil = pil.convert("RGBA")
         r_bg, g_bg, b_bg = bg_rgb
         pixels = pil.load()
         w, h_px = pil.size
@@ -71,25 +73,28 @@ def _make_qr_pil(qr_obj, fg, bg, style, radius, transparent):
 
 # ── Views ─────────────────────────────────────────────────────────────────────
 
+
 def qr_redirect(request, code):
-    """Public redirect endpoint. Logs a Scan and issues a 301."""
+    """Public redirect endpoint. Logs a Scan and issues a 302 (targets can change)."""
     try:
         qrr = QRRedirect.objects.get(short_code=code)
     except QRRedirect.DoesNotExist:
-        raise Http404("Link not found.")
+        raise Http404("Link not found.") from None
 
     if not qrr.is_active:
-        return render(request, 'qr_inactive.html', {'label': qrr.label}, status=410)
+        return render(request, "qr_inactive.html", {"label": qrr.label}, status=410)
 
     # Log silently — never let a DB hiccup break the redirect
     try:
-        x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR', '')
-        ip = x_forwarded.split(',')[0].strip() if x_forwarded else request.META.get('REMOTE_ADDR')
+        # The leftmost X-Forwarded-For entry is client-supplied and spoofable; the
+        # proxy appends the real peer address last.
+        x_forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
+        ip = x_forwarded.split(",")[-1].strip() if x_forwarded else request.META.get("REMOTE_ADDR")
         Scan.objects.create(
             redirect=qrr,
             ip_address=ip or None,
-            user_agent=request.META.get('HTTP_USER_AGENT', '')[:500],
-            referrer=request.META.get('HTTP_REFERER', '')[:500],
+            user_agent=request.META.get("HTTP_USER_AGENT", "")[:500],
+            referrer=request.META.get("HTTP_REFERER", "")[:500],
         )
     except Exception:
         pass
@@ -97,18 +102,23 @@ def qr_redirect(request, code):
     return HttpResponseRedirect(qrr.target_url)
 
 
+@staff_member_required(login_url="/admin/login/")
 def qr_code_image(request, redirect_id):
     """Returns a styled QR code PNG. All params fall back to stored values."""
     qrr = get_object_or_404(QRRedirect, id=redirect_id)
 
-    fg          = request.GET.get('fg',          qrr.fg_color)       or qrr.fg_color
-    bg          = request.GET.get('bg',          qrr.bg_color)       or qrr.bg_color
-    style       = request.GET.get('style',       qrr.qr_style)       or qrr.qr_style
-    radius      = float(request.GET.get('radius', qrr.qr_radius)     or qrr.qr_radius)
-    transparent = request.GET.get('transparent', str(qrr.bg_transparent)).lower() in ('1', 'true', 'yes')
+    fg = request.GET.get("fg", qrr.fg_color) or qrr.fg_color
+    bg = request.GET.get("bg", qrr.bg_color) or qrr.bg_color
+    style = request.GET.get("style", qrr.qr_style) or qrr.qr_style
+    radius = float(request.GET.get("radius", qrr.qr_radius) or qrr.qr_radius)
+    transparent = request.GET.get("transparent", str(qrr.bg_transparent)).lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
-    base_url = getattr(settings, 'QR_BASE_URL', 'http://127.0.0.1:8000')
-    qr_url   = f"{base_url}/r/{qrr.short_code}/"
+    base_url = getattr(settings, "QR_BASE_URL", "http://127.0.0.1:8000")
+    qr_url = f"{base_url}/r/{qrr.short_code}/"
 
     qr = qrcode.QRCode(
         version=None,
@@ -122,17 +132,17 @@ def qr_code_image(request, redirect_id):
     pil = _make_qr_pil(qr, fg, bg, style, radius, transparent)
 
     buf = io.BytesIO()
-    pil.save(buf, format='PNG')
+    pil.save(buf, format="PNG")
     buf.seek(0)
 
-    disposition = 'attachment' if request.GET.get('download') else 'inline'
-    response = HttpResponse(buf.read(), content_type='image/png')
-    response['Content-Disposition'] = f'{disposition}; filename="qr-{qrr.short_code}.png"'
-    response['Cache-Control'] = 'no-cache'
+    disposition = "attachment" if request.GET.get("download") else "inline"
+    response = HttpResponse(buf.read(), content_type="image/png")
+    response["Content-Disposition"] = f'{disposition}; filename="qr-{qrr.short_code}.png"'
+    response["Cache-Control"] = "no-cache"
     return response
 
 
-@staff_member_required(login_url='/admin/login/')
+@staff_member_required(login_url="/admin/login/")
 def qr_dashboard(request):
-    qr_base = getattr(settings, 'QR_BASE_URL', 'http://127.0.0.1:8000')
-    return render(request, 'qr_dashboard.html', {'qr_base_url': qr_base})
+    qr_base = getattr(settings, "QR_BASE_URL", "http://127.0.0.1:8000")
+    return render(request, "qr_dashboard.html", {"qr_base_url": qr_base})

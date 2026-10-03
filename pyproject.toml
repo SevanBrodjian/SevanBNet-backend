@@ -1,0 +1,27 @@
+[project]
+name = "sevanbnet-backend"
+version = "0.1.0"
+description = "API, admin and QR redirects for sevanb.net"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "django>=5.2,<5.3",
+    "djangorestframework",
+    "django-cors-headers",
+    "dj-database-url",
+    "gunicorn",
+    "psycopg[binary]",
+    "whitenoise",
+    "qrcode[pil]",
+]
+
+[dependency-groups]
+dev = ["ruff"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["sevanbnet/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ"]
+# DJ001 (null=True on text fields) needs schema migrations; revisit with the content-model rework.
+ignore = ["DJ001"]
