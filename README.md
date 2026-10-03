@@ -30,7 +30,18 @@ uv run python manage.py test
 
 ## Deployment
 
-Railway deploys `dev` to the development environment and `main` to production. The build, migrate, start and health-check steps are in `railway.json`. Changes go from `dev` to `main` through a pull request.
+Railway deploys `dev` to the development environment and `main` to production, each only after CI passes. Changes go from `dev` to `main` through a pull request.
+
+The service's build, migrate, start and health-check settings are defined in `.railway/railway.ts` (Railway infrastructure as code). Railway does not read that file on deploy, so after editing it apply it explicitly:
+
+```sh
+cd .railway && npm install && cd ..
+railway environment development
+railway config plan     # dry run: check it says "0 to destroy" and touches only backend_django
+railway config apply
+```
+
+Repeat with `railway environment production`. The file declares the partial `backend`, so it can only ever change the `backend_django` service; the database and frontend services are outside its scope.
 
 Each Railway environment needs these variables:
 
