@@ -1,46 +1,56 @@
-# SevanB.net Personal Website
+# sevanb.net backend
 
-This repository contains the source code for my personal website, showcasing my portfolio, resume, and contact information. The website is built using Django, HTML, Bootstrap, and hosted using Railway.
+Django app behind [sevanb.net](https://www.sevanb.net). It serves:
 
-## Features
+- a read-only JSON API (`/api/projects/`, `/api/publications/`, `/api/blogposts/`) consumed by the React frontend
+- the Django admin for managing that content
+- the QR code manager: public short links at `go.sevanb.net/r/<code>/` and a staff-only dashboard at `/qr/`
 
-- Responsive design
-- Project portfolio with embedded YouTube videos
-- Resume and contact information
+Every response is sent with `X-Robots-Tag: noindex` so that only the frontend appears in search results.
 
-## Getting Started
+## Local development
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+Requires [uv](https://docs.astral.sh/uv/).
 
-### Prerequisites
+```sh
+uv sync
+uv run python manage.py migrate
+uv run python manage.py runserver
+```
 
-- Python 3.6+
-- Django 3.2+
+Locally the app uses `db.sqlite3`, `DEBUG=True` and a throwaway secret key, so no configuration is needed.
 
-### Installation
+Checks (the same ones CI runs):
 
-1. Clone the repository:
+```sh
+uv run ruff check && uv run ruff format --check
+uv run python manage.py makemigrations --check --dry-run
+uv run python manage.py test
+```
 
-```git clone https://github.com/YourUsername/YourRepository.git```
+## Deployment
 
-2. Change directory to the project folder:
+Railway deploys `dev` to the development environment and `main` to production, each only after CI passes. Changes go from `dev` to `main` through a pull request.
 
-```cd YourRepository```
+The service's build, migrate, start and health-check settings are defined in `.railway/railway.ts` (Railway infrastructure as code). Railway does not read that file on deploy, so after editing it apply it explicitly:
 
-3. Install the required dependencies:
+```sh
+cd .railway && npm install && cd ..
+railway environment development
+railway config plan     # dry run: check it says "0 to destroy" and touches only backend_django
+railway config apply
+```
 
-```pip install -r requirements.txt```
+Repeat with `railway environment production`. The file declares the partial `backend`, so it can only ever change the `backend_django` service; the database and frontend services are outside its scope.
 
-4. Apply migrations:
+Each Railway environment needs these variables:
 
-```python manage.py migrate```
+| Variable | Notes |
+| --- | --- |
+| `DJANGO_SECRET_KEY` | Required. Long random string, different per environment. |
+| `DATABASE_URL` | Required. Reference the environment's Postgres service. |
+| `QR_BASE_URL` | Production: `https://go.sevanb.net` |
+| `SITE_URL` | Optional. Defaults to `https://www.sevanb.net`. |
+| `DJANGO_DEBUG` | Leave unset. Debug is off on Railway unless this is `True`. |
 
-5. Run the development server:
-
-```python manage.py runserver```
-
-6. Open your web browser and navigate to `http://127.0.0.1:8000/`.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+`RAILWAY_ENVIRONMENT_NAME` is set by Railway automatically. Its presence is what switches the app into deployment mode, where missing required variables stop the deploy instead of falling back to local defaults.
