@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from rest_framework.routers import DefaultRouter
 
@@ -13,7 +13,14 @@ router.register(r"projects", views.ProjectViewSet)
 router.register(r"publications", views.PublicationViewSet)
 
 urlpatterns = [
-    path("", RedirectView.as_view(url=settings.SITE_URL)),
+    path("", RedirectView.as_view(url=settings.SITE_URL, permanent=True)),
+    # Pages from when this backend served the site; see views.legacy_*.
+    path("home/", views.legacy_page("/")),
+    path("projects/", views.legacy_page("/projects")),
+    path("research/", views.legacy_page("/research")),
+    path("blog/", views.legacy_page("/blog")),
+    re_path(r"^projects/(?P<stub>[-\w]+)/?$", views.legacy_project),
+    re_path(r"^blog/(?P<stub>[-\w]+)/?$", views.legacy_post),
     path("healthz/", lambda request: HttpResponse("ok")),
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),

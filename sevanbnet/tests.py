@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from .models import Project, QRRedirect
+from .models import BlogPost, Project, QRRedirect
 
 
 class SiteTests(TestCase):
@@ -32,3 +32,27 @@ class SiteTests(TestCase):
         User.objects.create_user("staff", password="x", is_staff=True)
         self.client.login(username="staff", password="x")
         self.assertEqual(self.client.get(f"/api/qr/image/{qr.id}/").status_code, 200)
+
+    def test_old_site_urls_redirect_permanently_to_the_real_site(self):
+        Project.objects.create(
+            title="LLM Grounding - MazeGPT", independent=True, slug="llm-grounding-mazegpt"
+        )
+        BlogPost.objects.create(
+            title="How Reality Ends: An Exploration",
+            description="d",
+            content="c",
+            slug="how-reality-ends",
+        )
+        cases = {
+            "/": "https://www.sevanb.net",
+            "/home/": "https://www.sevanb.net/",
+            "/research/": "https://www.sevanb.net/research",
+            "/projects/LLM_Grounding_-_MazeGPT": "https://www.sevanb.net/projects/llm-grounding-mazegpt",
+            "/projects/llm-grounding-mazegpt": "https://www.sevanb.net/projects/llm-grounding-mazegpt",
+            "/projects/unknown": "https://www.sevanb.net/projects",
+            "/blog/How-Reality-Ends0-An-Exploration": "https://www.sevanb.net/blog/how-reality-ends",
+        }
+        for url, target in cases.items():
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 301, url)
+            self.assertEqual(response["Location"], target, url)
