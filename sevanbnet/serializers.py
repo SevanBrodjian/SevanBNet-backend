@@ -11,16 +11,9 @@ class BlanksAsNull(serializers.ModelSerializer):
         return {k: (None if v == "" else v) for k, v in data.items()}
 
 
-class ProjectPaperSerializer(BlanksAsNull):
-    class Meta:
-        model = Publication
-        fields = ["key", "title", "venue", "status", "date", "paper_url"]
-
-
 class ProjectSerializer(BlanksAsNull):
     media = serializers.SerializerMethodField()
     description_html = serializers.ReadOnlyField()
-    papers = ProjectPaperSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
@@ -38,7 +31,6 @@ class ProjectSerializer(BlanksAsNull):
             "source",
             "description",
             "description_html",
-            "papers",
         ]
 
     def get_media(self, p):

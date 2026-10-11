@@ -39,20 +39,17 @@ class ApiTests(TestCase):
         self.assertEqual(self.client.get("/api/projects/unlisted/").status_code, 200)
 
     def test_project_shape(self):
-        p = Project.objects.create(
+        Project.objects.create(
             title="Maze",
             slug="maze",
             media_kind="youtube",
             media="https://www.youtube.com/watch?v=c6Bqb5Okdh8",
             description="Line one\n\n<script>x()</script>**bold**",
         )
-        Publication.objects.create(title="Paper", status="Accepted", project=p)
-        Publication.objects.create(title="Hidden paper", status="x", project=p, visible=False)
         data = self.client.get("/api/projects/maze/").json()
         self.assertEqual(data["media"], {"kind": "youtube", "id": "c6Bqb5Okdh8"})
         self.assertIn("<p><strong>bold</strong></p>", data["description_html"])
         self.assertNotIn("script", data["description_html"])
-        self.assertEqual([paper["title"] for paper in data["papers"]], ["Paper"])
         self.assertIsNone(data["thumbnail"])  # blank fields are null
 
     def test_papers_link_only_to_visible_projects(self):
@@ -113,13 +110,37 @@ class HostTests(TestCase):
 
 
 class SignInTests(TestCase):
-    def test_lockout_after_five_failures(self):
+    def test_lockout_after_five_failures_from_any_address(self):
         User.objects.create_user("sevan", password="right-password", is_staff=True)
         client = panel_client("localhost")
-        for _ in range(5):
-            client.post("/admin/login/", {"username": "sevan", "password": "wrong"})
+        for i in range(5):
+            client.post(
+                "/admin/login/",
+                {"username": "sevan", "password": "wrong"},
+                REMOTE_ADDR=f"10.0.0.{i}",
+            )
         response = client.post("/admin/login/", {"username": "sevan", "password": "right-password"})
         self.assertEqual(response.status_code, 429)
+
+    def test_passkeys_accept_only_the_admin_origin(self):
+        from allauth.core import context
+        from allauth.mfa.webauthn.internal import auth as webauthn
+
+        request = RequestFactory().get("/", HTTP_HOST="admin.sevanb.net", secure=True)
+        with context.request_context(request):
+            server = webauthn.get_server()
+        self.assertEqual(server.rp.id, "sevanb.net")
+        self.assertTrue(server._verify("https://admin.sevanb.net"))
+        for origin in ["https://www.sevanb.net", "https://dev.sevanb.net", "https://go.sevanb.net"]:
+            self.assertFalse(server._verify(origin), origin)
+
+    def test_backup_code_seed_is_encrypted(self):
+        from allauth.mfa.recovery_codes.internal.auth import RecoveryCodes
+
+        user = User.objects.create_user("sevan")
+        codes = RecoveryCodes.activate(user)
+        self.assertNotRegex(codes.instance.data["seed"], r"^[0-9a-f]{80}$")
+        self.assertTrue(codes.validate_code(codes.get_unused_codes()[0]))
 
     @override_settings(REQUIRE_PASSKEY=True)
     def test_staff_must_add_a_passkey_first(self):

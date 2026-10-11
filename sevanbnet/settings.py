@@ -202,10 +202,12 @@ REQUIRE_PASSKEY = ON_RAILWAY
 # Railway's edge proxy sets X-Real-IP to the visitor's address.
 ALLAUTH_TRUSTED_CLIENT_IP_HEADER = "X-Real-IP" if ON_RAILWAY else None
 
-# Lock an IP out for an hour after 5 failed sign-ins (shared across workers via the DB).
+# After 5 failed sign-ins from one address, or for one username from anywhere, password
+# sign-in pauses for an hour (recorded in the database, so shared across workers).
+# Signing in with a passkey alone still works during a pause.
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = timedelta(hours=1)
-AXES_LOCKOUT_PARAMETERS = ["ip_address"]
+AXES_LOCKOUT_PARAMETERS = ["ip_address", "username"]
 AXES_RESET_ON_SUCCESS = True
 AXES_ENABLE_ADMIN = False
 AXES_CLIENT_IP_CALLABLE = "sevanbnet.security.client_ip"

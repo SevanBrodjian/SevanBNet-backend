@@ -23,5 +23,13 @@ class SevanBNetConfig(AppConfig):
     verbose_name = "Site"
 
     def ready(self):
+        # Passkeys: accept only the admin host's own origin (see auth.get_webauthn_server).
+        # allauth looks this factory up as a module global on every passkey request.
+        from allauth.mfa.webauthn.internal import auth as webauthn
+
+        from .auth import get_webauthn_server
+
+        webauthn.get_server = get_webauthn_server
+
         if settings.USING_SANDBOX:
             connection_created.connect(_require_sandbox_marker, weak=False)

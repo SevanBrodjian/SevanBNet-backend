@@ -17,6 +17,7 @@ dependencies = [
     "django-axes~=8.3",
     "markdown~=3.11",
     "nh3~=0.3.7",
+    "cryptography>=50.0.2",
 ]
 
 [dependency-groups]

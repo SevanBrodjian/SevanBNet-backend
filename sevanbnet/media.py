@@ -95,8 +95,10 @@ def upload(file, folder=""):
         raise UploadError(f"That file type isn't supported. Use one of: {allowed}.")
     if file.size > MAX_BYTES:
         raise UploadError("Files over 20 MB can't be served; put long videos on YouTube.")
-    content = file.read()
     path = repo_path(file.name, folder)
+    if len(path) > Media._meta.get_field("path").max_length:
+        raise UploadError("That name and folder are too long; shorten them.")
+    content = file.read()
     result = put_file(path, content)
     return Media.objects.create(
         path=path, url=cdn_url(result["commit"]["sha"], path), kind=kind, size=len(content)

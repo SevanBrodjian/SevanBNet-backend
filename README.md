@@ -50,7 +50,7 @@ Each Railway environment needs these variables:
 | `DJANGO_SECRET_KEY` | Required. Long random string, different per environment. |
 | `DATABASE_URL` | Required. Reference the environment's Postgres service (ideally its `DATABASE_PRIVATE_URL`). |
 | `QR_BASE_URL` | Production: `https://go.sevanb.net` |
-| `SITE_URL` | Optional. Defaults to `https://www.sevanb.net`. |
+| `SITE_URL` | Development: `https://dev.sevanb.net`. Production leaves it unset (`https://www.sevanb.net`). |
 | `DJANGO_DEBUG` | Leave unset. Debug is off on Railway unless this is `True`. |
 | `MEDIA_REPO`, `GITHUB_MEDIA_TOKEN` | Optional. Media uploads; off without them. |
 | `RAILWAY_DEPLOY_TOKEN`, `FRONTEND_SERVICE_ID` | Optional. The Rebuild site button; off without them. |

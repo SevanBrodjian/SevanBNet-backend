@@ -5,9 +5,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# The URL goes through Railway's public proxy, so TLS is required (sslmode=require).
 url=$(railway variables --project 8a19bf10-5cbc-40d3-bc16-03358f5d20d5 \
   --service Postgres_db --environment development --json |
-  python3 -c 'import json, sys; print(json.load(sys.stdin).get("DATABASE_URL", ""))')
+  python3 -c 'import json, sys
+url = json.load(sys.stdin).get("DATABASE_URL", "")
+if url and "sslmode=" not in url:
+    url += ("&" if "?" in url else "?") + "sslmode=require"
+print(url)')
 [ -n "$url" ] || { echo "Couldn't read the sandbox URL from Railway (railway login?)." >&2; exit 1; }
 
 umask 077

@@ -299,7 +299,9 @@ def forward(apps, schema_editor):
 
 
 def backward(apps, schema_editor):
-    """Put values back into the old columns. Topics, associations and post text are gone."""
+    """Put values back into the old columns. Topics, associations and post text are gone,
+    so this is for rehearsals only: production is rolled back by restoring the backup taken
+    before the migration (docs/control-panel.md)."""
     Project = apps.get_model("sevanbnet", "Project")
     Publication = apps.get_model("sevanbnet", "Publication")
 
@@ -323,6 +325,10 @@ def backward(apps, schema_editor):
             paper.project_url = f"{SITE_URL}/projects/{paper.project.slug}"
         paper.first_author = paper.authors.startswith("Sevan Brodjian")
         paper.save()
+
+    # The old site hardcodes these two pages, so as rows they'd be listed twice. forward()
+    # creates them, so they go again (the papers above already keep their links as URLs).
+    Project.objects.filter(slug__in=FLAGSHIPS).delete()
 
     if schema_editor.connection.vendor == "postgresql":
         schema_editor.execute("SET CONSTRAINTS ALL IMMEDIATE")
@@ -460,7 +466,7 @@ class Migration(migrations.Migration):
         # Orderings name the new fields, so they change before any rows are read.
         migrations.AlterModelOptions(
             name="blogpost",
-            options={"ordering": ["date", "title"], "verbose_name": "post"},
+            options={"ordering": ["date", "title"], "verbose_name": "post", "verbose_name_plural": "writing"},
         ),
         migrations.AlterModelOptions(
             name="project",

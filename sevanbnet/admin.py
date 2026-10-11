@@ -60,16 +60,15 @@ class ProjectAdmin(ModelAdmin):
         (
             "Default page",
             {
-                "description": "Used when the site's code has no hand-built page for this "
-                "project (Learning Taichi and the Sonar project have one).",
-                "fields": (
-                    "media_kind",
-                    "media",
-                    "media_poster",
-                    "media_alt",
-                    ("media_width", "media_height"),
-                    "description",
-                ),
+                "description": "Ignored when the site's code has a hand-built page for this slug.",
+                "fields": ("media_kind", "media", "description"),
+            },
+        ),
+        (
+            "Media details",
+            {
+                "classes": ["collapse"],
+                "fields": ("media_poster", "media_alt", ("media_width", "media_height")),
             },
         ),
         ("Papers", {"fields": ("linked_papers",)}),
@@ -114,7 +113,7 @@ class ProjectChoice(forms.ModelChoiceField):
 
 @admin.register(Publication)
 class PaperAdmin(ModelAdmin):
-    list_display = ("title", "visible", "status", "venue", "date", "project")
+    list_display = ("title", "visible", "rank", "status", "venue", "date", "project")
     list_editable = ("visible",)
     list_filter = ("visible",)
     search_fields = ("title", "authors", "venue")
@@ -156,6 +155,7 @@ class UploadForm(forms.Form):
     file = forms.FileField(widget=UnfoldAdminFileFieldWidget)
     folder = forms.CharField(
         required=False,
+        max_length=100,
         widget=UnfoldAdminTextInputWidget(attrs={"placeholder": "e.g. projects/learning-taichi"}),
         help_text="Optional. Where it goes in the media repo; defaults to uploads/.",
     )

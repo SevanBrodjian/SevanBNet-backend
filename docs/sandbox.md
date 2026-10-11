@@ -1,7 +1,7 @@
 # Databases: production and the sandbox
 
 - **Production** (the production environment's `Postgres_db`) is the only real data. It is edited only at https://admin.sevanb.net.
-- **The sandbox** is the development environment's `Postgres_db`. The dev site (dev.sevanb.net, dev-admin.sevanb.net) and, when you want, your local backend both use it. It is a copy of production that can be thrown away and refreshed at any time, so editing or migrating it never risks anything.
+- **The sandbox** is the development environment's `Postgres_db`. The dev site (dev.sevanb.net once that domain is added, and dev-admin.sevanb.net) and, when you want, your local backend both use it. It is a copy of production that can be thrown away and refreshed at any time, so editing or migrating it never risks anything.
 
 A refresh makes the sandbox an exact copy of production (including the record of applied migrations), then runs the migrations of the code you have checked out, so every new migration is rehearsed on real data before production sees it.
 
@@ -15,7 +15,7 @@ scripts/sandbox-refresh
 
 Needs `railway login` and the Postgres 15 tools (`brew install postgresql@15`). Run it from the branch whose migrations you want to rehearse (usually `dev`). It takes a few seconds and logs what it did, without any URLs or passwords, to `logs/sandbox-refresh.log`:
 
-1. Reads two URLs from Railway without printing them: `SANDBOX_SOURCE_URL` (a production backend variable that connects as the read-only `sandbox_reader` role) and the development `Postgres_db` `DATABASE_URL`.
+1. Reads two URLs from Railway without printing them: `SANDBOX_SOURCE_URL` (a production backend variable that connects as the read-only `sandbox_reader` role) and the development `Postgres_db` `DATABASE_URL`. Both connections require TLS.
 2. Refuses to continue unless the source session is read-only and the role can't write, the target has the `sandbox.marker` table and the source doesn't, the two are different servers, and everything is Postgres 15.
 3. Dumps production's `public` schema, leaving out the data of `sevanbnet_scan`, `django_session` and `axes_*`. Extensions (TimescaleDB) aren't touched.
 4. In one transaction on the sandbox: drops everything in `public` except extension objects, restores the dump, deletes backup codes. If any step fails, the old sandbox stays as it was.
@@ -51,9 +51,11 @@ Local admin sign-in is password only (passkeys are for admin.sevanb.net and dev-
    The SQL is in `scripts/sandbox-reader.sql`: a login role with `SELECT` on the `public` tables and sequences (including future ones), read-only sessions by default, at most 2 connections, nothing else.
 3. **Store the source URL** on the production backend service as `SANDBOX_SOURCE_URL` (the backend itself never reads it; the script does):
    ```
-   postgresql://sandbox_reader:<SANDBOX_PW>@<production RAILWAY_TCP_PROXY_DOMAIN>:<RAILWAY_TCP_PROXY_PORT>/railway
+   postgresql://sandbox_reader:<SANDBOX_PW>@<production RAILWAY_TCP_PROXY_DOMAIN>:<RAILWAY_TCP_PROXY_PORT>/railway?sslmode=require
    ```
-   Railway can build it from references: `postgresql://sandbox_reader:<SANDBOX_PW>@${{Postgres_db.RAILWAY_TCP_PROXY_DOMAIN}}:${{Postgres_db.RAILWAY_TCP_PROXY_PORT}}/${{Postgres_db.PGDATABASE}}`.
+   Railway can build it from references: `postgresql://sandbox_reader:<SANDBOX_PW>@${{Postgres_db.RAILWAY_TCP_PROXY_DOMAIN}}:${{Postgres_db.RAILWAY_TCP_PROXY_PORT}}/${{Postgres_db.PGDATABASE}}?sslmode=require`.
+
+   **Treat this URL like the production database URL.** The role can't change anything, but it can read everything, including live admin sessions (a session is a signed-in panel, past the passkey) and QR scan IPs. Postgres can't exclude those tables from it, because `pg_dump` must lock every table it dumps.
 4. Run `scripts/sandbox-refresh` once and check the log.
 
 ## Private network for the backend

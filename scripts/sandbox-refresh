@@ -20,9 +20,13 @@ mkdir -p logs
 log() { printf '%s  %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" | tee -a "$LOG"; }
 refuse() { log "REFUSED: $*"; exit 1; }
 
-railway_var() { # <service> <environment> <name>
+railway_var() { # <service> <environment> <name>: a database URL, with TLS required
   railway variables --project "$PROJECT" --service "$1" --environment "$2" --json |
-    python3 -c 'import json, sys; print(json.load(sys.stdin).get(sys.argv[1], ""))' "$3"
+    python3 -c 'import json, sys
+url = json.load(sys.stdin).get(sys.argv[1], "")
+if url and "sslmode=" not in url:
+    url += ("&" if "?" in url else "?") + "sslmode=require"
+print(url)' "$3"
 }
 
 # host:port/dbname of a URL, for comparing without printing credentials.

@@ -234,6 +234,7 @@ class BlogPost(models.Model):
     class Meta:
         ordering = ["date", "title"]
         verbose_name = "post"
+        verbose_name_plural = "writing"
 
     def __str__(self):
         return self.title

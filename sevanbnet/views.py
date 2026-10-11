@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.db.models import Prefetch
 from django.http import HttpResponsePermanentRedirect
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -19,9 +18,7 @@ from .serializers import (
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     """Every visible project, listed or not; the Projects page shows the listed ones."""
 
-    queryset = Project.objects.filter(visible=True).prefetch_related(
-        Prefetch("papers", queryset=Publication.objects.filter(visible=True))
-    )
+    queryset = Project.objects.filter(visible=True)
     serializer_class = ProjectSerializer
     lookup_field = "slug"
 

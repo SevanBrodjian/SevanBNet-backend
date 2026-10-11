@@ -355,6 +355,7 @@ name = "sevanbnet-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "cryptography" },
     { name = "dj-database-url" },
     { name = "django" },
     { name = "django-allauth", extra = ["mfa"] },
@@ -377,6 +378,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cryptography", specifier = ">=50.0.2" },
     { name = "dj-database-url" },
     { name = "django", specifier = ">=5.2,<5.3" },
     { name = "django-allauth", extras = ["mfa"], specifier = "~=65.19.7" },

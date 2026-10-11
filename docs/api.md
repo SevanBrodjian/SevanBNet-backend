@@ -16,7 +16,7 @@ Rules that hold everywhere:
 - Optional text left blank is `null`, never `""`.
 - Dates are `YYYY-MM-DD` calendar dates (no time zone).
 - Lists are already in display order; don't re-sort them.
-- Paths in `thumbnail`, `media.src` and `media.poster` either are full URLs (uploads are on `https://cdn.jsdelivr.net/...`) or start with `/`, meaning a file in the frontend's `public/` folder (see "Files the frontend serves" below).
+- Paths in `thumbnail`, `media.src` and `media.poster` either are full URLs (uploads are on `https://cdn.jsdelivr.net/...`) or start with `/`, meaning a file in the frontend's `public/` folder (the older projects' files are in `public/media/projects/`).
 
 ## `GET /api/projects/`
 
@@ -38,17 +38,7 @@ Every visible project, **listed or not**. The Projects page shows only `listed: 
   "media": { "kind": "youtube", "id": "c6Bqb5Okdh8" },
   "source": "https://github.com/SevanBrodjian/MazeGPT",
   "description": "In this project I have evaluated ...",
-  "description_html": "<p>In this project I have evaluated ...</p>",
-  "papers": [
-    {
-      "key": "sonar",
-      "title": "Single View Seafloor Recovery from Imaging Sonar via Differentiable Rendering",
-      "venue": "CVPR PBVS Workshop",
-      "status": "Accepted",
-      "date": "2026-05-22",
-      "paper_url": "https://arxiv.org/abs/2605.24195"
-    }
-  ]
+  "description_html": "<p>In this project I have evaluated ...</p>"
 }
 ```
 
@@ -56,14 +46,13 @@ Every visible project, **listed or not**. The Projects page shows only `listed: 
 | --- | --- |
 | `slug` | The page is `/projects/<slug>`. A slug with a hand-built page in the frontend code (`learning-taichi`, `sonar-inverse-rendering`) uses that page; every other project uses the default page (media + description). |
 | `listed` | Show in the Projects list only when true. |
-| `start`, `end` | Either may be null. `end: null` with a `start` means ongoing. Both null: undated (the Sonar project today; show its paper's venue instead, as now). |
+| `start`, `end` | Either may be null. `end: null` with a `start` means ongoing. Both null: undated. |
 | `summary` | The one line for the list. |
 | `thumbnail` | 16:10 image for the list, or null. With no thumbnail: a terminal tile if `media.kind` is `code`, else the name tile. |
 | `glow` | Hex colour for the hover glow, or null (use the default). |
 | `media` | One of the shapes below, or null. Shown at the top of the default page. |
 | `source` | Code link (the "Code" button), or null. |
 | `description` / `description_html` | Markdown as written, and the same rendered to sanitized HTML (scripts, styles and event handlers removed; links limited to http(s), mailto and site paths). Use `description_html`; keep DOMPurify as a second layer. |
-| `papers` | Visible papers that link to this project, in the papers' order. |
 
 `media` shapes (`width`/`height` are pixel sizes or null):
 
@@ -76,7 +65,7 @@ Every visible project, **listed or not**. The Projects page shows only `listed: 
 
 ## `GET /api/papers/`
 
-Every visible paper. Order: papers with a `rank` first (lowest first), then newest `date` first. Note: today's papers all have ranks (1–4 in the sandbox) that the current frontend ignores while sorting by date; following this order changes the Papers page until the ranks are cleared in the panel.
+Every visible paper. Order: papers with a `rank` first (lowest first), then newest `date` first.
 
 ```json
 {
@@ -102,11 +91,11 @@ Every visible paper. Order: papers with a `rank` first (lowest first), then newe
 
 | Field | Notes |
 | --- | --- |
-| `key` | Short stable name for the paper's widget in frontend code (`temporal`, `sonar`, `kuramoto` today), or null. Replaces matching by arXiv id. |
+| `key` | Short stable name for the paper's widget in frontend code (`temporal`, `sonar`, `kuramoto` today), or null. |
 | `authors` | One string; highlight "Sevan Brodjian" wherever it appears. |
 | `venue`, `status` | Show "Venue · Status", or just the status when `venue` is null. No status lamp. |
 | `paper_url` | The Paper button (PDF or arXiv), or null. Already resolved from the old url/DOI fields. |
-| `project` | The on-site project page (`/projects/<slug>`) for the Project button. Null when the paper has none **or the project is hidden**, so hiding a project removes the button instead of breaking it. `source` can feed the paper's Code button (the Sonar paper's code link used to live in `overrides.ts`). |
+| `project` | The on-site project page (`/projects/<slug>`) for the Project button. Null when the paper has none **or the project is hidden**, so hiding a project removes the button instead of breaking it. `source` feeds the paper's Code button. |
 | `project_url` | A project page hosted elsewhere, or null. Never set together with `project`. |
 | `bibtex` | For the BibTeX button (line endings normalized, trimmed), or null. |
 | `description` | Short plain-text summary for the Papers page. |
@@ -133,29 +122,4 @@ Site-wide text, edited under Site settings.
 }
 ```
 
-`about` is the About page's paragraphs in order. `role` is the tag shown with the name on the home page (the About page currently spells out the institution; it can keep doing that in code or use this).
-
-## Renamed and removed (for the frontend switch)
-
-| Was | Now |
-| --- | --- |
-| `/api/publications/` | `/api/papers/` |
-| `/api/blogposts/` | `/api/posts/` |
-| project `link`, `img`, `description` (plain) | `source`, `thumbnail` + `media`, `description_html` |
-| paper `authors_str`, `journal_name`, `citation`, `url` / `doi`, `site_path`, `publication_date` / `submission_date` | `authors`, `venue`, `bibtex`, `paper_url`, `project`, `date` |
-| post `published_date`, `content`, `id` | `date`; content is the Markdown file; no id |
-| `src/projects/earlier.ts`, `meta.js` (summaries, thumbnails, glows, media, Learning Taichi and Sonar metadata), `src/papers/overrides.ts`, `site.js` `LINE` / `ROLE` / `ABOUT.paragraphs` | the fields above |
-
-## Files the frontend serves
-
-The migration points project images and video at stable paths under the frontend's `public/media/projects/`. The frontend should move these files there (from `src/projects/assets/` and `public/projects/`):
-
-```
-public/media/projects/aussies-thumb.webp     public/media/projects/aussies-poster.webp
-public/media/projects/aussies.mp4            public/media/projects/thinking-thumb.webp
-public/media/projects/thinking.webp          public/media/projects/maze-thumb.webp
-public/media/projects/dies-thumb.webp        public/media/projects/lt-thumb.webp
-public/media/projects/sonar-thumb.webp
-```
-
-New uploads go to the media repo instead and arrive as full jsDelivr URLs.
+`about` is the About page's paragraphs in order. `role` is the tag shown with the name on the home page.

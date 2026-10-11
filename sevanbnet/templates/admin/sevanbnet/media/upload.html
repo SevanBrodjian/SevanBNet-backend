@@ -4,6 +4,7 @@
 {% block content %}
   <div class="panel-note">
     <p class="text-font-subtle-light dark:text-font-subtle-dark">One file at a time, up to {{ max_mb }} MB ({{ types }}). Put long videos on YouTube.</p>
+    <p class="text-font-subtle-light dark:text-font-subtle-dark"><strong>Uploads are public as soon as they're saved and can't be taken back:</strong> anyone can browse the media repo, and jsDelivr keeps a copy even if the file is deleted. Don't upload anything for hidden or unreleased work.</p>
   </div>
   <form method="post" enctype="multipart/form-data" class="panel-note">
     {% csrf_token %}
