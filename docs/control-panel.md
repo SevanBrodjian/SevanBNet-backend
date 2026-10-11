@@ -27,7 +27,9 @@ The first time you sign in on admin.sevanb.net, the panel sends you to "Add a pa
 1. Keep "Also sign in with this passkey alone" ticked and press **Add passkey**. Safari or Chrome asks to save it to iCloud Keychain; confirm with Face ID or Touch ID.
 2. The next page shows your 10 **backup codes**, once. Download them or put them in your password manager, then tick "I've saved these codes".
 
-The passkey belongs to sevanb.net, so the same one works on dev-admin.sevanb.net and syncs to your iPhone and Mac. It is accepted only on the panel's own address, never on another sevanb.net site. To add another (say, a hardware key) or make new backup codes: the site menu at the top left, or your name at the bottom left, then **Passkeys and backup codes**.
+The passkey belongs to sevanb.net, so the same one works on dev-admin.sevanb.net and syncs to your iPhone and Mac. It is accepted only on the panel's own address, never on another sevanb.net site.
+
+**Make it on admin.sevanb.net, and after that never add a passkey on dev-admin.sevanb.net.** Your devices keep one sevanb.net passkey per account, so a new one made on dev-admin would replace the production one. dev-admin gets your production passkey (and password) at the next sandbox refresh. To add another (say, a hardware key) or make new backup codes: the site menu at the top left, or your name at the bottom left, then **Passkeys and backup codes**.
 
 Backup codes are stored encrypted with `DJANGO_SECRET_KEY`. If that key is ever changed, the old codes stop working: sign in with your passkey and make new ones.
 
