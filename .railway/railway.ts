@@ -40,6 +40,13 @@ export default defineRailway((ctx) => {
       PGPASSWORD: preserve(),
       PGPORT: preserve(),
       PGUSER: preserve(),
+      // Control panel (see docs/control-panel.md); optional, so they may not exist yet.
+      MEDIA_REPO: preserve(),
+      GITHUB_MEDIA_TOKEN: preserve(),
+      RAILWAY_DEPLOY_TOKEN: preserve(),
+      FRONTEND_SERVICE_ID: preserve(),
+      // Production only: read by scripts/sandbox-refresh, never by the app.
+      ...(prod ? { SANDBOX_SOURCE_URL: preserve() } : {}),
     },
   });
 
