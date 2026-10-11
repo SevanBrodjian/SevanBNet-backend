@@ -60,7 +60,9 @@ urlpatterns = [
     path("admin/qr/api/redirects/<int:pk>/scans/", qr_api.redirect_scans, name="qr-api-scans"),
     path("admin/rebuild/", panel(rebuild_view), name="rebuild"),
     path("admin/", admin.site.urls),
-    # Accounts are never made or reset from the web.
-    re_path(r"^accounts/(signup|password/reset)/", lambda request, *a: HttpResponseNotFound()),
+    # Accounts are never made or reset from the web, and no email is sent.
+    re_path(
+        r"^accounts/(signup|password/reset|email)/", lambda request, *a: HttpResponseNotFound()
+    ),
     path("accounts/", include("allauth.urls")),
 ]
