@@ -13,7 +13,7 @@
 
 ## Branches and deploys
 - Railway deploys `dev` to the development environment and `main` to production, each only after CI passes. Never push `main` without Sevan's explicit go-ahead.
-- Railway service settings live in `.railway/railway.ts`. Change them only with `railway config plan` first (it must say "0 to destroy"), then apply that pinned plan. Never pass `--confirm-destructive`. When a release needs new settings, merge the code first and apply the settings right after.
+- Railway service settings live in `.railway/railway.ts`. Change them only with `railway config plan` first (it must say "0 to destroy"), then apply that pinned plan. Never pass `--confirm-destructive`. When a release needs new settings, merge the code first and apply the settings right after. Applying settings triggers a deploy: wait for any running deploy to finish before pushing or applying again, so two deploys never run database migrations at the same time.
 
 ## Before committing
 - `uv run ruff check`, `uv run ruff format --check`, `uv run python manage.py makemigrations --check --dry-run` and `uv run python manage.py test`, judged by exit code.
