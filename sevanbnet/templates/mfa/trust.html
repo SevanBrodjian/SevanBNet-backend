@@ -1,0 +1,22 @@
+{% extends "mfa/base_entrance.html" %}
+{% load allauth %}
+{% comment %} allauth's "Trust this browser?" step, in plain words. {% endcomment %}
+{% block head_title %}Trust this browser?{% endblock head_title %}
+{% block content %}
+    {% element h1 %}Trust this browser?{% endelement %}
+    {% element p %}If you do, signing in here asks only for your password for {{ trust_until|timeuntil:trust_from }}. Only on your own devices.{% endelement %}
+    {% url 'mfa_trust' as action_url %}
+    {% element form form=form method="post" action=action_url %}
+        {% slot body %}
+            {% csrf_token %}
+            {% element fields form=form unlabeled=True %}
+            {% endelement %}
+        {% endslot %}
+        {% slot actions %}
+            {% element button_group %}
+                {% element button name="action" value="trust" type="submit" tags="primary,mfa,trust" %}Trust this browser{% endelement %}
+                {% element button name="action" value="skip" type="submit" tags="outline,mfa,trust" %}Not now{% endelement %}
+            {% endelement %}
+        {% endslot %}
+    {% endelement %}
+{% endblock content %}

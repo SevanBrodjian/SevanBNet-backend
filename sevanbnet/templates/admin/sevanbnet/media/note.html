@@ -1,0 +1,7 @@
+<div class="panel-note text-font-subtle-light dark:text-font-subtle-dark">
+  {% if uploads_ready %}
+    <p>Uploads are committed to the media repo on GitHub and served from a permanent jsDelivr URL. Copy a URL from the list, or pick the file straight from a project's thumbnail or media field. Removing an entry here leaves the file in the repo.</p>
+  {% else %}
+    <p>Uploading isn't set up on this server: it needs the MEDIA_REPO and GITHUB_MEDIA_TOKEN variables (see docs/control-panel.md). Files already listed still work. Project fields also accept any URL.</p>
+  {% endif %}
+</div>

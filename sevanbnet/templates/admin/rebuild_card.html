@@ -1,0 +1,15 @@
+{% load unfold %}
+<div class="panel-note">
+  {% component "unfold/components/card.html" with title="Rebuild site" %}
+    <p>Edits show on the site straight away. The copies of each page that search engines read are made when the site is built, so rebuild after editing to refresh them. It takes a few minutes.</p>
+    {% if rebuild_ready %}
+      <form method="post" action="{% url 'rebuild' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% component "unfold/components/button.html" with submit=1 icon="refresh" %}Rebuild site{% endcomponent %}
+      </form>
+    {% else %}
+      <p class="text-font-subtle-light dark:text-font-subtle-dark">Not set up on this server. It needs the RAILWAY_DEPLOY_TOKEN and FRONTEND_SERVICE_ID variables (see docs/control-panel.md).</p>
+    {% endif %}
+  {% endcomponent %}
+</div>

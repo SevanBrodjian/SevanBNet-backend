@@ -1,0 +1,10 @@
+{% load allauth %}{% comment %} allauth's buttons with the control panel's button styles. {% endcomment %}
+<{% if attrs.href %}a href="{{ attrs.href }}"{% else %}button{% endif %}
+{% if attrs.form %}form="{{ attrs.form }}"{% endif %}
+{% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+{% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+{% if attrs.value %}value="{{ attrs.value }}"{% endif %}
+{% if attrs.type %}type="{{ attrs.type }}"{% endif %}
+class="font-medium inline-flex items-center gap-1 rounded-default justify-center whitespace-nowrap cursor-pointer px-3 py-2 w-full {% if "danger" in attrs.tags %}border border-transparent bg-red-600 text-white hover:bg-red-600/80{% elif "outline" in attrs.tags or "link" in attrs.tags or "cancel" in attrs.tags or "tool" in attrs.tags %}border border-base-200 bg-white shadow-xs text-important dark:border-base-700 dark:bg-transparent hover:bg-base-100/80 dark:hover:bg-base-800/80{% else %}border border-transparent bg-primary-600 text-white hover:bg-primary-600/80{% endif %}">
+{% slot %}{% endslot %}
+</{% if attrs.href %}a{% else %}button{% endif %}>

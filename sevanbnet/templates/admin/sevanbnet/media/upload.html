@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% load unfold %}
+
+{% block content %}
+  <div class="panel-note">
+    <p class="text-font-subtle-light dark:text-font-subtle-dark">One file at a time, up to {{ max_mb }} MB ({{ types }}). Put long videos on YouTube.</p>
+  </div>
+  <form method="post" enctype="multipart/form-data" class="panel-note">
+    {% csrf_token %}
+    {% include "unfold/helpers/field.html" with field=form.file %}
+    {% include "unfold/helpers/field.html" with field=form.folder %}
+    <div class="flex gap-3 mt-4">
+      {% component "unfold/components/button.html" with submit=1 icon="upload" %}Upload{% endcomponent %}
+      {% url "admin:sevanbnet_media_changelist" as back %}
+      {% component "unfold/components/button.html" with href=back variant="default" %}Cancel{% endcomponent %}
+    </div>
+  </form>
+{% endblock %}

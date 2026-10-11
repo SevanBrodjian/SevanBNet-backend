@@ -1,0 +1,6 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  {% url "admin:index" as next %}
+  {% include "admin/rebuild_card.html" with next=next %}
+{% endblock %}

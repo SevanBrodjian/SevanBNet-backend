@@ -1,36 +1,99 @@
 from rest_framework import serializers
 
-from .models import BlogPost, Project, Publication
+from .models import BlogPost, Project, Publication, SiteSettings, youtube_id
 
 
-class BlogPostSerializer(serializers.ModelSerializer):
+class BlanksAsNull(serializers.ModelSerializer):
+    """Optional text left blank in the admin is sent as null, never as ""."""
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return {k: (None if v == "" else v) for k, v in data.items()}
+
+
+class ProjectPaperSerializer(BlanksAsNull):
     class Meta:
-        model = BlogPost
-        fields = "__all__"
+        model = Publication
+        fields = ["key", "title", "venue", "status", "date", "paper_url"]
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(BlanksAsNull):
+    media = serializers.SerializerMethodField()
+    description_html = serializers.ReadOnlyField()
+    papers = ProjectPaperSerializer(many=True, read_only=True)
+
     class Meta:
         model = Project
-        fields = "__all__"
+        fields = [
+            "slug",
+            "title",
+            "listed",
+            "rank",
+            "start",
+            "end",
+            "summary",
+            "thumbnail",
+            "glow",
+            "media",
+            "source",
+            "description",
+            "description_html",
+            "papers",
+        ]
+
+    def get_media(self, p):
+        if not (p.media_kind and p.media):
+            return None
+        if p.media_kind == Project.YOUTUBE:
+            return {"kind": "youtube", "id": youtube_id(p.media)}
+        if p.media_kind == Project.CODE:
+            return {"kind": "code", "text": p.media}
+        media = {"kind": p.media_kind, "src": p.media}
+        if p.media_kind == Project.VIDEO:
+            media["poster"] = p.media_poster or None
+        else:
+            media["alt"] = p.media_alt
+        return media | {"width": p.media_width, "height": p.media_height}
 
 
-class PublicationSerializer(serializers.ModelSerializer):
+class PaperSerializer(BlanksAsNull):
+    project = serializers.SerializerMethodField()
+
     class Meta:
         model = Publication
         fields = [
             "id",
+            "key",
             "title",
-            "authors_str",
-            "journal_name",
+            "authors",
+            "venue",
             "status",
-            "description",
-            "img",
-            "url",
-            "doi",
-            "site_path",
+            "date",
+            "paper_url",
+            "project",
             "project_url",
-            "publication_date",
-            "submission_date",
-            "citation",
+            "bibtex",
+            "description",
+            "rank",
         ]
+
+    def get_project(self, paper):
+        # A hidden project has no page, so the paper simply stops linking to it.
+        p = paper.project
+        if p is None or not p.visible:
+            return None
+        return {"slug": p.slug, "title": p.title, "source": p.source or None}
+
+
+class PostSerializer(BlanksAsNull):
+    class Meta:
+        model = BlogPost
+        fields = ["slug", "title", "description", "date"]
+
+
+class SiteSettingsSerializer(serializers.ModelSerializer):
+    about = serializers.ListField(source="about_paragraphs", child=serializers.CharField())
+
+    class Meta:
+        model = SiteSettings
+        fields = ["home_line", "role", "about"]
