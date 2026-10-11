@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Point the local backend at the sandbox (the development Postgres): writes the
+# gitignored .env.sandbox, which .envrc loads with `dotenv_if_exists .env.sandbox`.
+# Delete .env.sandbox to go back to db.sqlite3. See docs/sandbox.md.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+url=$(railway variables --project 8a19bf10-5cbc-40d3-bc16-03358f5d20d5 \
+  --service Postgres_db --environment development --json |
+  python3 -c 'import json, sys; print(json.load(sys.stdin).get("DATABASE_URL", ""))')
+[ -n "$url" ] || { echo "Couldn't read the sandbox URL from Railway (railway login?)." >&2; exit 1; }
+
+umask 077
+printf "DATABASE_URL='%s'\n" "$url" >.env.sandbox
+echo "Wrote .env.sandbox (readable only by you)."
+
+if ! grep -qs 'dotenv_if_exists .env.sandbox' .envrc; then
+  echo "Add this line to .envrc, then run \`direnv allow\`:"
+  echo "  dotenv_if_exists .env.sandbox"
+fi
+echo "The local backend refuses any Postgres without the sandbox.marker table."
