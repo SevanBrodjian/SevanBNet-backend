@@ -15,7 +15,7 @@ Requires [uv](https://docs.astral.sh/uv/).
 ```sh
 uv sync
 uv run python manage.py migrate
-uv run python manage.py runserver
+uv run python manage.py runserver 8000   # always http://localhost:8000
 ```
 
 Locally the app uses `db.sqlite3`, `DEBUG=True` and a throwaway secret key, so no configuration is needed.
