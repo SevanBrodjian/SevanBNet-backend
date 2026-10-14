@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% load unfold %}
+
+{% block title %}{{ site_title }}{% endblock %}
+
+{% block content %}
+  <div class="panel-grid">
+    {% for title, view, count in cards %}
+      {% url view as href %}
+      {% component "unfold/components/card.html" with href=href title=title %}
+        <p class="panel-big">{{ count.visible }}</p>
+        <p class="text-font-subtle-light dark:text-font-subtle-dark">
+          visible of {{ count.total }}{% if title == "Projects" and unlisted %}, {{ unlisted }} not listed{% endif %}
+        </p>
+      {% endcomponent %}
+    {% endfor %}
+    {% url "admin:sevanbnet_media_changelist" as media_url %}
+    {% component "unfold/components/card.html" with href=media_url title="Media" %}
+      <p class="panel-big">{{ media_count }}</p>
+      <p class="text-font-subtle-light dark:text-font-subtle-dark">uploaded files</p>
+    {% endcomponent %}
+  </div>
+
+  {% include "admin/rebuild_card.html" with next=request.path %}
+{% endblock %}

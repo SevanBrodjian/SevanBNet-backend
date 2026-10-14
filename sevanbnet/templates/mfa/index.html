@@ -1,0 +1,33 @@
+{% extends "mfa/base_manage.html" %}
+{% load allauth %}
+{% comment %} allauth's two-factor page, in plain words: passkeys and backup codes. {% endcomment %}
+{% block head_title %}Passkeys and backup codes{% endblock head_title %}
+{% block content %}
+    {% element h1 %}Passkeys and backup codes{% endelement %}
+
+    {% element h2 %}Passkeys{% endelement %}
+    {% with count=authenticators.webauthn|length %}
+        {% element p %}
+            {% if count %}You have {{ count }} passkey{{ count|pluralize }}. One iCloud Keychain passkey works on admin.sevanb.net and dev-admin.sevanb.net.{% else %}No passkeys yet.{% endif %}
+        {% endelement %}
+        {% element button_group %}
+            {% url 'mfa_add_webauthn' as add_url %}
+            {% element button href=add_url %}Add a passkey{% endelement %}
+            {% if count %}
+                {% url 'mfa_list_webauthn' as list_url %}
+                {% element button href=list_url tags="outline" %}Manage passkeys{% endelement %}
+            {% endif %}
+        {% endelement %}
+    {% endwith %}
+
+    {% element h2 %}Backup codes{% endelement %}
+    {% with total=authenticators.recovery_codes.generate_codes|length unused=authenticators.recovery_codes.get_unused_codes|length %}
+        {% element p %}
+            {% if authenticators.recovery_codes %}{{ unused }} of {{ total }} unused. Each one signs you in once, in place of a passkey.{% else %}None yet. They're made when you add your first passkey.{% endif %}
+        {% endelement %}
+        {% if is_mfa_enabled %}
+            {% url 'mfa_generate_recovery_codes' as generate_url %}
+            {% element button href=generate_url tags="outline" %}Make new backup codes{% endelement %}
+        {% endif %}
+    {% endwith %}
+{% endblock content %}

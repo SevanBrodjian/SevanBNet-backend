@@ -1,0 +1,23 @@
+{% extends "unfold/layouts/unauthenticated.html" %}
+{% comment %}
+  Every allauth page (sign-in, passkeys, backup codes) in the control panel's look.
+  The admin context it needs comes from sevanbnet.admin_site.sign_in_pages.
+{% endcomment %}
+
+{% block title %}{% block head_title %}{% endblock %} | {{ site_title }}{% endblock %}
+
+{% block base %}
+  <div id="page" class="bg-white flex min-h-screen dark:bg-base-900">
+    <div class="flex grow items-center justify-center mx-auto px-4 relative">
+      <div class="w-full sm:w-96 auth{% if user.is_authenticated %} auth-wide{% endif %}">
+        {% include "unfold/helpers/messages.html" %}
+        {% block content %}{% endblock %}
+        {% if user.is_authenticated and user.is_staff %}
+          <a class="auth-back" href="{% url 'admin:index' %}">Back to the control panel</a>
+        {% endif %}
+      </div>
+      {% include "unfold/helpers/unauthenticated_header.html" %}
+    </div>
+  </div>
+  {% block extra_body %}{% endblock %}
+{% endblock %}

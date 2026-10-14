@@ -129,3 +129,7 @@ dmypy.json
 .envrc
 .sevanbnet
 .DS_Store
+# collectstatic output, local logs, and the sandbox connection (scripts/sandbox-env)
+staticfiles/
+logs/
+.env.sandbox

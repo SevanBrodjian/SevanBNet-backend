@@ -1,0 +1,30 @@
+{% extends "mfa/webauthn/base.html" %}
+{% load static allauth %}
+{% comment %} allauth's "Add Security Key" page, worded for passkeys. {% endcomment %}
+{% block head_title %}Add a passkey{% endblock head_title %}
+{% block content %}
+    {% element h1 %}Add a passkey{% endelement %}
+    {% element p %}Your iPhone or Mac saves it in iCloud Keychain. One passkey works on admin.sevanb.net and dev-admin.sevanb.net.{% endelement %}
+    {% url 'mfa_add_webauthn' as action_url %}
+    {% element form form=form method="post" action=action_url %}
+        {% slot body %}
+            {% csrf_token %}
+            {% element fields form=form %}
+            {% endelement %}
+        {% endslot %}
+        {% slot actions %}
+            {% element button id="mfa_webauthn_add" type="button" %}Add passkey{% endelement %}
+        {% endslot %}
+    {% endelement %}
+    {% include "mfa/webauthn/snippets/scripts.html" %}
+    {{ js_data|json_script:"js_data" }}
+    <script data-allauth-onload="allauth.webauthn.forms.addForm" type="application/json">{
+    "ids": {
+        "add": "mfa_webauthn_add",
+        "passwordless": "{{ form.passwordless.auto_id }}",
+        "credential": "{{ form.credential.auto_id }}",
+        "data": "js_data"
+    }
+}
+    </script>
+{% endblock %}

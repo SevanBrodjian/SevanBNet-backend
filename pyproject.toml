@@ -12,6 +12,12 @@ dependencies = [
     "psycopg[binary]",
     "whitenoise",
     "qrcode[pil]",
+    "django-unfold~=0.108.0",
+    "django-allauth[mfa]~=65.19.7",
+    "django-axes~=8.3",
+    "markdown~=3.11",
+    "nh3~=0.3.7",
+    "cryptography>=50.0.2",
 ]
 
 [dependency-groups]
@@ -23,5 +29,3 @@ extend-exclude = ["sevanbnet/migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "DJ"]
-# DJ001 (null=True on text fields) needs schema migrations; revisit with the content-model rework.
-ignore = ["DJ001"]

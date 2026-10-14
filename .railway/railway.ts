@@ -25,8 +25,9 @@ export default defineRailway((ctx) => {
     build: { builder: "RAILPACK" },
     preDeploy: "python manage.py migrate --noinput",
     // collectstatic writes into the container, so it runs at start rather than pre-deploy.
+    // --timeout 120: a 20 MB media upload to GitHub can take longer than gunicorn's 30 s.
     start:
-      "python manage.py collectstatic --noinput && gunicorn sevanbnet.wsgi --bind 0.0.0.0:$PORT --workers 2 --access-logfile -",
+      "python manage.py collectstatic --noinput && gunicorn sevanbnet.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile -",
     healthcheck: "/healthz/",
     healthcheckTimeout: 60,
     // Values live in Railway; preserve() keeps whatever is set there.
@@ -40,6 +41,14 @@ export default defineRailway((ctx) => {
       PGPASSWORD: preserve(),
       PGPORT: preserve(),
       PGUSER: preserve(),
+      // Control panel (see docs/control-panel.md); optional, so they may not exist yet.
+      MEDIA_REPO: preserve(),
+      GITHUB_MEDIA_TOKEN: preserve(),
+      RAILWAY_DEPLOY_TOKEN: preserve(),
+      FRONTEND_SERVICE_ID: preserve(),
+      SITE_URL: preserve(),
+      // Production only: read by scripts/sandbox-refresh, never by the app.
+      ...(prod ? { SANDBOX_SOURCE_URL: preserve() } : {}),
     },
   });
 

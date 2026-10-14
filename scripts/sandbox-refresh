@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+# Replace the sandbox (the development environment's Postgres) with an exact copy of
+# production, then run this checkout's migrations on it. See docs/sandbox.md.
+#
+# Production is read through the sandbox_reader role (scripts/sandbox-reader.sql), which
+# can only SELECT, so this script cannot change production. Not copied: QR scans (visitor
+# IPs), sessions, login-attempt records, and backup codes.
+#
+# Usage: scripts/sandbox-refresh            (needs `railway login` and Postgres 15 tools)
+# The two URLs come from Railway and are never printed. For testing, SANDBOX_SOURCE_URL
+# and SANDBOX_TARGET_URL in the environment take their place.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+PROJECT=8a19bf10-5cbc-40d3-bc16-03358f5d20d5
+PG_BIN=${PG_BIN:-/opt/homebrew/opt/postgresql@15/bin}
+LOG=logs/sandbox-refresh.log
+mkdir -p logs
+
+log() { printf '%s  %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" | tee -a "$LOG"; }
+refuse() { log "REFUSED: $*"; exit 1; }
+
+railway_var() { # <service> <environment> <name>: a database URL, with TLS required
+  railway variables --project "$PROJECT" --service "$1" --environment "$2" --json |
+    python3 -c 'import json, sys
+url = json.load(sys.stdin).get(sys.argv[1], "")
+if url and "sslmode=" not in url:
+    url += ("&" if "?" in url else "?") + "sslmode=require"
+print(url)' "$3"
+}
+
+# host:port/dbname of a URL, for comparing without printing credentials.
+where() {
+  python3 -c 'import sys, urllib.parse as u; p = u.urlsplit(sys.argv[1]); print(f"{p.hostname}:{p.port or 5432}{p.path}")' "$1"
+}
+
+sql() { # <url> <query>: one value, no headers
+  "$PG_BIN/psql" "$1" -X -At -v ON_ERROR_STOP=1 -c "$2"
+}
+
+counts() { # <url>: exact row counts of the site's tables
+  sql "$1" "SELECT string_agg(table_name || '=' || (xpath('/row/n/text()',
+      query_to_xml(format('SELECT count(*) AS n FROM public.%I', table_name), false, true, '')))[1]::text, ' '
+      ORDER BY table_name)
+    FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+      AND (table_name LIKE 'sevanbnet\_%' OR table_name IN ('auth_user', 'mfa_authenticator'))"
+}
+
+log "Refresh started from $(git rev-parse --abbrev-ref HEAD)@$(git rev-parse --short HEAD)"
+
+SOURCE_URL=${SANDBOX_SOURCE_URL:-$(railway_var backend_django production SANDBOX_SOURCE_URL)}
+TARGET_URL=${SANDBOX_TARGET_URL:-$(railway_var Postgres_db development DATABASE_URL)}
+[ -n "$SOURCE_URL" ] || refuse "no SANDBOX_SOURCE_URL on the production backend (see docs/sandbox.md)"
+[ -n "$TARGET_URL" ] || refuse "couldn't read the development Postgres URL"
+
+# Safety checks, all before anything is written.
+[ "$("$PG_BIN/pg_dump" --version | grep -oE '[0-9]+' | head -1)" = 15 ] ||
+  refuse "need Postgres 15 client tools in $PG_BIN (brew install postgresql@15)"
+[ "$(where "$SOURCE_URL")" != "$(where "$TARGET_URL")" ] || refuse "source and target are the same database"
+source_check=$(sql "$SOURCE_URL" "SELECT current_setting('default_transaction_read_only')
+    || ' ' || has_table_privilege('public.django_migrations', 'INSERT')
+    || ' ' || (to_regclass('sandbox.marker') IS NOT NULL)
+    || ' ' || current_setting('server_version_num')::int / 10000") ||
+  refuse "couldn't connect to production"
+target_check=$(sql "$TARGET_URL" "SELECT (to_regclass('sandbox.marker') IS NOT NULL)
+    || ' ' || current_setting('server_version_num')::int / 10000") ||
+  refuse "couldn't connect to the sandbox"
+read -r source_readonly source_can_write source_marked source_version <<<"$source_check"
+read -r target_marked target_version <<<"$target_check"
+[ "$source_readonly" = on ] && [ "$source_can_write" = false ] ||
+  refuse "the source isn't read-only; SANDBOX_SOURCE_URL must use the sandbox_reader role"
+[ "$source_marked" = false ] || refuse "the source has a sandbox.marker table, so it isn't production"
+[ "$target_marked" = true ] || refuse "the target has no sandbox.marker table, so it isn't the sandbox"
+[ "$source_version" = 15 ] && [ "$target_version" = 15 ] || refuse "both servers must be Postgres 15"
+log "Checks passed: read-only source, marked target, different servers"
+log "Production rows: $(counts "$SOURCE_URL")"
+
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+chmod 700 "$WORK"
+
+# Only the public schema: extensions (TimescaleDB) and sandbox.marker are left alone.
+"$PG_BIN/pg_dump" "$SOURCE_URL" -Fc --schema=public --no-owner --no-privileges \
+  --exclude-table-data=public.sevanbnet_scan \
+  --exclude-table-data=public.django_session \
+  --exclude-table-data='public.axes_*' \
+  -f "$WORK/production.dump"
+log "Dumped production ($(du -h "$WORK/production.dump" | cut -f1))"
+
+# The dump recreates every table; `public` itself already exists in the sandbox.
+"$PG_BIN/pg_restore" -l "$WORK/production.dump" |
+  grep -vE '^[0-9]+; [0-9]+ [0-9]+ (SCHEMA|COMMENT) - (SCHEMA )?public ' >"$WORK/contents"
+
+# One transaction: drop what's in public (except extension objects), restore, and drop
+# the backup codes. If anything fails, the old sandbox stays as it was.
+{
+  cat <<'SQL'
+SET lock_timeout = '20s';
+SET client_min_messages = warning;
+DO $$
+DECLARE r record;
+BEGIN
+  FOR r IN
+    SELECT format('%I.%I', n.nspname, c.relname) AS name,
+           CASE c.relkind WHEN 'v' THEN 'VIEW' WHEN 'm' THEN 'MATERIALIZED VIEW'
+                          WHEN 'S' THEN 'SEQUENCE' WHEN 'f' THEN 'FOREIGN TABLE'
+                          ELSE 'TABLE' END AS kind
+    FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p', 'v', 'm', 'S', 'f')
+      AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.classid = 'pg_class'::regclass
+                      AND d.objid = c.oid AND d.deptype = 'e')
+    ORDER BY c.relkind = 'S'
+  LOOP
+    EXECUTE format('DROP %s IF EXISTS %s CASCADE', r.kind, r.name);
+  END LOOP;
+END $$;
+SQL
+  "$PG_BIN/pg_restore" --no-owner --no-privileges -L "$WORK/contents" -f - "$WORK/production.dump"
+  cat <<'SQL'
+DO $$
+BEGIN
+  IF to_regclass('public.mfa_authenticator') IS NOT NULL THEN
+    DELETE FROM public.mfa_authenticator WHERE type = 'recovery_codes';
+  END IF;
+END $$;
+SQL
+} | "$PG_BIN/psql" "$TARGET_URL" -X -q --single-transaction -v ON_ERROR_STOP=1 >/dev/null
+log "Restored into the sandbox"
+log "Sandbox rows: $(counts "$TARGET_URL")"
+
+# Rehearse this checkout's migrations on the copy.
+DATABASE_URL="$TARGET_URL" uv run python manage.py migrate --noinput | sed 's/^/    /' | tee -a "$LOG"
+log "Refresh finished. Sandbox rows: $(counts "$TARGET_URL")"

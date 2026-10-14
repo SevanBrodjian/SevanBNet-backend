@@ -1,0 +1,77 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'sevanbnet/qr.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="qr-app" id="qr-app"
+     data-qr-base="{{ qr_base_url }}"
+     data-api="{% url 'qr-api-list' %}"
+     data-image="/admin/qr/image/"
+     data-csrf="{{ csrf_token }}">
+  <div class="qr-header">
+    <p class="qr-intro">Short links on go.sevanb.net. Changing a target keeps printed codes working.</p>
+    <button id="new-btn">New QR code</button>
+  </div>
+
+  <div id="new-form-panel">
+    <form id="new-form" autocomplete="off">
+      <div class="fg">
+        <label for="f-label">Label</label>
+        <input id="f-label" name="label" type="text" placeholder="e.g. Sonar BCI Demo" required>
+      </div>
+      <div class="fg">
+        <label for="f-code">Short Code</label>
+        <input id="f-code" name="short_code" type="text" placeholder="e.g. sonar-bci" required
+               pattern="[a-z0-9\-]+" title="Lowercase letters, numbers, hyphens only">
+      </div>
+      <div class="fg span2">
+        <label for="f-url">Target URL</label>
+        <input id="f-url" name="target_url" type="url" placeholder="https://..." required>
+      </div>
+      <div class="fg">
+        <label for="f-style">Module Style</label>
+        <select id="f-style" name="qr_style">
+          <option value="square">Square</option>
+          <option value="rounded">Rounded</option>
+          <option value="circle">Circle</option>
+          <option value="gapped">Gapped</option>
+        </select>
+      </div>
+      <div class="fg" id="f-radius-group" style="display:none">
+        <label for="f-radius">Corner Radius <span id="f-radius-val">0.50</span></label>
+        <input id="f-radius" name="qr_radius" type="range" min="0" max="1" step="0.05" value="0.5">
+      </div>
+      <div class="form-row">
+        <span class="form-row-label">QR Colors</span>
+        <div class="color-pair">
+          <label>Foreground</label>
+          <input name="fg_color" type="color" value="#000000">
+        </div>
+        <div class="color-pair">
+          <label>Background</label>
+          <input name="bg_color" type="color" value="#ffffff">
+        </div>
+        <label class="transp-label">
+          <input type="checkbox" name="bg_transparent" class="transp-chk"> Transparent bg
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Create QR code</button>
+        <button type="button" class="btn-ghost" id="cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="qr-main">
+    <div id="cards-grid">
+      <div class="loading-state">Loading…</div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+</div>
+{% endblock %}

@@ -2,9 +2,9 @@
 
 Django app behind [sevanb.net](https://www.sevanb.net). It serves:
 
-- a read-only JSON API (`/api/projects/`, `/api/publications/`, `/api/blogposts/`) consumed by the React frontend
-- the Django admin for managing that content
-- the QR code manager: public short links at `go.sevanb.net/r/<code>/` and a staff-only dashboard at `/qr/`
+- a read-only JSON API (`/api/projects/`, `/api/papers/`, `/api/posts/`, `/api/site/`) consumed by the React frontend; see [docs/api.md](docs/api.md)
+- the control panel (Django admin with Unfold) at admin.sevanb.net and dev-admin.sevanb.net, with passkey sign-in, the QR code manager, media uploads and a Rebuild site button; see [docs/control-panel.md](docs/control-panel.md)
+- QR short links at `go.sevanb.net/r/<code>/`
 
 Every response is sent with `X-Robots-Tag: noindex` so that only the frontend appears in search results.
 
@@ -15,10 +15,10 @@ Requires [uv](https://docs.astral.sh/uv/).
 ```sh
 uv sync
 uv run python manage.py migrate
-uv run python manage.py runserver
+uv run python manage.py runserver 8000   # always http://localhost:8000
 ```
 
-Locally the app uses `db.sqlite3`, `DEBUG=True` and a throwaway secret key, so no configuration is needed.
+Locally the app uses `db.sqlite3`, `DEBUG=True` and a throwaway secret key, so no configuration is needed. The panel is at http://localhost:8000/admin/ (password sign-in). To work on a copy of production instead, use the sandbox: [docs/sandbox.md](docs/sandbox.md).
 
 Checks (the same ones CI runs):
 
@@ -48,9 +48,14 @@ Each Railway environment needs these variables:
 | Variable | Notes |
 | --- | --- |
 | `DJANGO_SECRET_KEY` | Required. Long random string, different per environment. |
-| `DATABASE_URL` | Required. Reference the environment's Postgres service. |
+| `DATABASE_URL` | Required. Reference the environment's Postgres service (ideally its `DATABASE_PRIVATE_URL`). |
 | `QR_BASE_URL` | Production: `https://go.sevanb.net` |
-| `SITE_URL` | Optional. Defaults to `https://www.sevanb.net`. |
+| `SITE_URL` | Development: `https://dev.sevanb.net`. Production leaves it unset (`https://www.sevanb.net`). |
 | `DJANGO_DEBUG` | Leave unset. Debug is off on Railway unless this is `True`. |
+| `MEDIA_REPO`, `GITHUB_MEDIA_TOKEN` | Optional. Media uploads; off without them. |
+| `RAILWAY_DEPLOY_TOKEN`, `FRONTEND_SERVICE_ID` | Optional. The Rebuild site button; off without them. |
+| `SANDBOX_SOURCE_URL` | Production only, read by `scripts/sandbox-refresh`, not by the app. |
+
+Details for the optional ones are in [docs/control-panel.md](docs/control-panel.md#setup-reference).
 
 `RAILWAY_ENVIRONMENT_NAME` is set by Railway automatically. Its presence is what switches the app into deployment mode, where missing required variables stop the deploy instead of falling back to local defaults.

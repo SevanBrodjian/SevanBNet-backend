@@ -2,11 +2,11 @@ import io
 
 import qrcode
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from .models import QRRedirect, Scan
+from .security import client_ip
 
 # ── Image generation helpers ──────────────────────────────────────────────────
 
@@ -86,13 +86,9 @@ def qr_redirect(request, code):
 
     # Log silently — never let a DB hiccup break the redirect
     try:
-        # The leftmost X-Forwarded-For entry is client-supplied and spoofable; the
-        # proxy appends the real peer address last.
-        x_forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-        ip = x_forwarded.split(",")[-1].strip() if x_forwarded else request.META.get("REMOTE_ADDR")
         Scan.objects.create(
             redirect=qrr,
-            ip_address=ip or None,
+            ip_address=client_ip(request) or None,
             user_agent=request.META.get("HTTP_USER_AGENT", "")[:500],
             referrer=request.META.get("HTTP_REFERER", "")[:500],
         )
@@ -102,9 +98,8 @@ def qr_redirect(request, code):
     return HttpResponseRedirect(qrr.target_url)
 
 
-@staff_member_required(login_url="/admin/login/")
 def qr_code_image(request, redirect_id):
-    """Returns a styled QR code PNG. All params fall back to stored values."""
+    """Returns a styled QR code PNG (staff only, see urls.py). Params fall back to stored values."""
     qrr = get_object_or_404(QRRedirect, id=redirect_id)
 
     fg = request.GET.get("fg", qrr.fg_color) or qrr.fg_color
@@ -140,9 +135,3 @@ def qr_code_image(request, redirect_id):
     response["Content-Disposition"] = f'{disposition}; filename="qr-{qrr.short_code}.png"'
     response["Cache-Control"] = "no-cache"
     return response
-
-
-@staff_member_required(login_url="/admin/login/")
-def qr_dashboard(request):
-    qr_base = getattr(settings, "QR_BASE_URL", "http://127.0.0.1:8000")
-    return render(request, "qr_dashboard.html", {"qr_base_url": qr_base})
