@@ -3,7 +3,7 @@
 ## Fixed local addresses (do not change)
 - Backend: http://localhost:8000 (`uv run python manage.py runserver 8000`)
 - Admin: http://localhost:8000/admin/
-- Frontend: http://localhost:5173 (see the frontend repo)
+- Frontend: http://localhost:1000 (see the frontend repo)
 
 ## Databases: never risk production data
 - Production content is real and backed up; it is edited only through the production admin.
