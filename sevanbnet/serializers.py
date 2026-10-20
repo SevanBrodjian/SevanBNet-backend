@@ -84,8 +84,11 @@ class PostSerializer(BlanksAsNull):
 
 
 class SiteSettingsSerializer(serializers.ModelSerializer):
+    # The plain paragraphs stay for search engines and llms.txt; the page shows the HTML.
     about = serializers.ListField(source="about_paragraphs", child=serializers.CharField())
+    about_html = serializers.ReadOnlyField()
+    writing_note_html = serializers.ReadOnlyField()
 
     class Meta:
         model = SiteSettings
-        fields = ["home_line", "role", "about"]
+        fields = ["home_line", "role", "about", "about_html", "writing_note", "writing_note_html"]

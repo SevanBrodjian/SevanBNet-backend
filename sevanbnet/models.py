@@ -248,6 +248,13 @@ class BlogPost(models.Model):
         return f"{settings.SITE_URL}/writing/{self.slug}"
 
 
+WRITING_NOTE = (
+    "Warning: the following are my unfiltered philosophical explorations. They reflect my "
+    "thinking over time and not necessarily what I still believe. I do not edit old essays, "
+    "even when they now seem immature to me."
+)
+
+
 class SiteSettings(models.Model):
     """Text on the site that isn't tied to a project, paper or post. There is one row."""
 
@@ -256,7 +263,17 @@ class SiteSettings(models.Model):
     )
     role = models.CharField(max_length=200, help_text="Shown with your name on the home page.")
     about = models.TextField(
-        "About", help_text="The About page. Separate paragraphs with a blank line."
+        "About",
+        help_text="The About page, in Markdown: a blank line starts a paragraph, a single "
+        "line break stays a line break, *italic*, **bold**, [a link](https://…).",
+    )
+    writing_note = models.TextField(
+        "Writing page note",
+        blank=True,
+        default=WRITING_NOTE,
+        db_default=WRITING_NOTE,
+        help_text="Shown at the top of the Writing page, in Markdown like the About text. "
+        "Leave it empty to show nothing.",
     )
 
     class Meta:
@@ -276,6 +293,14 @@ class SiteSettings(models.Model):
     @property
     def about_paragraphs(self):
         return [p.strip() for p in re.split(r"\n\s*\n", self.about) if p.strip()]
+
+    @property
+    def about_html(self):
+        return markdown_html(self.about)
+
+    @property
+    def writing_note_html(self):
+        return markdown_html(self.writing_note)
 
 
 class Media(models.Model):

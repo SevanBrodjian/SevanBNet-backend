@@ -11,7 +11,7 @@ from django.db.migrations.executor import MigrationExecutor
 from django.test import Client, RequestFactory, TestCase, TransactionTestCase, override_settings
 
 from .auth import MFAAdapter
-from .models import BlogPost, Media, Project, Publication, QRRedirect
+from .models import BlogPost, Media, Project, Publication, QRRedirect, SiteSettings
 
 
 def panel_client(host="admin.sevanb.net"):
@@ -81,6 +81,20 @@ class ApiTests(TestCase):
         site = self.client.get("/api/site/").json()
         self.assertEqual(site["role"], "PhD Student, Computation and Neural Systems, Caltech")
         self.assertEqual(len(site["about"]), 3)
+        self.assertTrue(site["writing_note"].startswith("Warning: the following are my"))
+        self.assertTrue(site["writing_note_html"].startswith("<p>Warning: the following"))
+        self.assertEqual(site["about_html"].count("<p>"), 3)
+
+    def test_site_text_markdown(self):
+        settings = SiteSettings.load()
+        settings.writing_note = (
+            "First line\nsecond *line*\n\n[Link](https://example.com) <script>x</script>"
+        )
+        settings.save()
+        html = self.client.get("/api/site/").json()["writing_note_html"]
+        self.assertIn("First line<br>\nsecond <em>line</em>", html)
+        self.assertIn('<a href="https://example.com"', html)
+        self.assertNotIn("<script>", html)
 
 
 class HostTests(TestCase):
