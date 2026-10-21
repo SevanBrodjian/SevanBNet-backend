@@ -35,6 +35,7 @@ class ApiTests(TestCase):
         projects = {p["slug"]: p for p in self.client.get("/api/projects/").json()}
         self.assertEqual(set(projects), {"shown", "unlisted"})
         self.assertFalse(projects["unlisted"]["listed"])
+        self.assertFalse(projects["unlisted"]["standalone"])
         self.assertEqual(self.client.get("/api/projects/hidden/").status_code, 404)
         self.assertEqual(self.client.get("/api/projects/unlisted/").status_code, 200)
 
@@ -182,7 +183,36 @@ class PanelTests(TestCase):
         }
         response = client.post(f"/admin/sevanbnet/project/{project.pk}/change/", data, follow=True)
         self.assertFalse(Project.objects.get(pk=project.pk).visible)
-        self.assertContains(response, "no longer show a Project button: The sonar paper")
+        self.assertContains(response, "no longer show a Site button: The sonar paper")
+
+    def test_saving_content_rebuilds_the_site_soon(self):
+        client = panel_client()
+        staff(client, is_superuser=True)
+        project = Project.objects.create(title="Sonar", slug="sonar")
+        data = {"title": "Sonar 2", "slug": "sonar", "visible": "on", "listed": "on"}
+        data |= {"media_kind": "", "description": ""}
+        with mock.patch("sevanbnet.rebuild.soon", return_value=True) as soon:
+            response = client.post(
+                f"/admin/sevanbnet/project/{project.pk}/change/", data, follow=True
+            )
+        soon.assert_called_once()
+        self.assertContains(response, "The site rebuilds itself")
+
+    def test_rebuild_soon_waits_for_the_last_edit(self):
+        from . import rebuild
+
+        with (
+            override_settings(
+                RAILWAY_DEPLOY_TOKEN="t", FRONTEND_SERVICE_ID="s", RAILWAY_ENVIRONMENT_ID="e"
+            ),
+            mock.patch.object(rebuild, "SETTLE", 0.05),
+            mock.patch.object(rebuild, "rebuild") as deploy,
+        ):
+            for _ in range(3):
+                self.assertTrue(rebuild.soon())
+            rebuild._timer.join()
+        deploy.assert_called_once()
+        self.assertFalse(rebuild.soon())  # not configured here
 
     def test_media_upload_commits_to_github(self):
         client = panel_client()

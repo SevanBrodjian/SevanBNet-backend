@@ -93,7 +93,7 @@ Long videos belong on YouTube (jsDelivr is for modest files). Removing a row her
 
 ## Rebuild site
 
-Edits show on the site straight away. The copies of each page that search engines read are made when the site is built, so after editing, press **Rebuild site** (on the overview page, or in the site menu at the top left). It redeploys the frontend of the same environment and takes a few minutes.
+Edits show on the site straight away. The copies of each page that search engines and language models read, and the text built into the site's code, are made when the site is built, so saving or deleting a project, paper, post or Site settings rebuilds the site by itself, about a minute after the last save (a run of edits makes one build). **Rebuild site** (on the overview page, or in the site menu at the top left) does the same at once. Either redeploys the frontend of the same environment and takes a few minutes.
 
 ## QR codes
 

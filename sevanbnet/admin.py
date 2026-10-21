@@ -14,7 +14,7 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 from unfold.views import UnfoldModelAdminViewMixin
 from unfold.widgets import UnfoldAdminFileFieldWidget, UnfoldAdminTextInputWidget
 
-from . import media
+from . import media, rebuild
 from .models import BlogPost, Media, Project, Publication, QRRedirect, SiteSettings
 
 
@@ -29,8 +29,34 @@ class MediaPicker(UnfoldAdminTextInputWidget):
         return format_html('{}<datalist id="{}-library">{}</datalist>', html, name, options)
 
 
+class RebuildsSite:
+    """Content the site's prerendered pages show: saving or deleting it rebuilds the site
+    shortly after (see rebuild.soon), so nothing published lags behind the panel."""
+
+    def rebuild_soon(self, request):
+        if rebuild.soon() and not getattr(request, "_rebuild_noted", False):
+            request._rebuild_noted = True
+            messages.info(
+                request,
+                "The site rebuilds itself in about a minute; "
+                "the change is live a few minutes after that.",
+            )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        self.rebuild_soon(request)
+
+    def delete_model(self, request, obj):
+        super().delete_model(request, obj)
+        self.rebuild_soon(request)
+
+    def delete_queryset(self, request, queryset):
+        super().delete_queryset(request, queryset)
+        self.rebuild_soon(request)
+
+
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(ModelAdmin):
+class SiteSettingsAdmin(RebuildsSite, ModelAdmin):
     """One row of site-wide text; the list page goes straight to it."""
 
     def has_add_permission(self, request):
@@ -44,7 +70,7 @@ class SiteSettingsAdmin(ModelAdmin):
 
 
 @admin.register(Project)
-class ProjectAdmin(ModelAdmin):
+class ProjectAdmin(RebuildsSite, ModelAdmin):
     list_display = ("title", "visible", "listed", "rank", "start", "end")
     list_editable = ("visible", "listed")
     list_filter = ("visible", "listed")
@@ -54,7 +80,18 @@ class ProjectAdmin(ModelAdmin):
     fieldsets = (
         (
             None,
-            {"fields": ("title", "slug", "visible", "listed", "rank", ("start", "end"), "source")},
+            {
+                "fields": (
+                    "title",
+                    "slug",
+                    "visible",
+                    "listed",
+                    "standalone",
+                    "rank",
+                    ("start", "end"),
+                    "source",
+                )
+            },
         ),
         ("Projects list", {"fields": ("summary", "thumbnail", "glow")}),
         (
@@ -101,7 +138,7 @@ class ProjectAdmin(ModelAdmin):
             if titles:
                 messages.warning(
                     request,
-                    f"“{obj}” is hidden, so these papers no longer show a Project button: "
+                    f"“{obj}” is hidden, so these papers no longer show a Site button: "
                     + "; ".join(titles),
                 )
 
@@ -112,7 +149,7 @@ class ProjectChoice(forms.ModelChoiceField):
 
 
 @admin.register(Publication)
-class PaperAdmin(ModelAdmin):
+class PaperAdmin(RebuildsSite, ModelAdmin):
     list_display = ("title", "visible", "rank", "status", "venue", "date", "project")
     list_editable = ("visible",)
     list_filter = ("visible",)
@@ -141,7 +178,7 @@ class PaperAdmin(ModelAdmin):
 
 
 @admin.register(BlogPost)
-class PostAdmin(ModelAdmin):
+class PostAdmin(RebuildsSite, ModelAdmin):
     list_display = ("title", "visible", "date", "slug")
     list_editable = ("visible",)
     list_filter = ("visible",)
