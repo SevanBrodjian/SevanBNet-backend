@@ -156,7 +156,7 @@ class PaperAdmin(RebuildsSite, ModelAdmin):
     search_fields = ("title", "authors", "venue")
     fieldsets = (
         (None, {"fields": ("title", "visible", "authors", "venue", "status", "date")}),
-        ("Links", {"fields": ("paper_url", "project", "project_url")}),
+        ("Links", {"fields": ("paper_url", "code_url", "project", "project_url")}),
         ("Papers page", {"fields": ("description", "bibtex", "key", "rank", "doi")}),
     )
 

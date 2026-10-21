@@ -63,6 +63,7 @@ class PaperSerializer(BlanksAsNull):
             "status",
             "date",
             "paper_url",
+            "code_url",
             "project",
             "project_url",
             "bibtex",

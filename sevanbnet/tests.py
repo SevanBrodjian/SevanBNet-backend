@@ -69,7 +69,7 @@ class ApiTests(TestCase):
         self.assertEqual(
             set(papers[0]),
             {"id", "key", "title", "authors", "venue", "status", "date", "paper_url", "project"}
-            | {"project_url", "bibtex", "description", "rank"},
+            | {"code_url", "project_url", "bibtex", "description", "rank"},
         )
 
     def test_posts_and_site_settings(self):
@@ -396,3 +396,32 @@ class ContentMigrationTests(TransactionTestCase):
         self.assertIn("eprint={2608.27929}", temporal.bibtex)
 
         self.assertIn("Generative models", SiteSettings.objects.get().home_line)
+
+
+class CodeLinkMigrationTests(TransactionTestCase):
+    """0035 gives each paper its own Code link, starting from its project's Source."""
+
+    serialized_rollback = True
+
+    def migrate(self, target):
+        executor = MigrationExecutor(connection)
+        executor.migrate(target)
+        return executor.loader.project_state(target).apps
+
+    def test_papers_take_their_projects_source(self):
+        apps = self.migrate([("sevanbnet", "0034_project_standalone")])
+        Project = apps.get_model("sevanbnet", "Project")
+        Publication = apps.get_model("sevanbnet", "Publication")
+        repo = Project.objects.create(title="Sonar", slug="sonar", source="https://github.com/s")
+        local = Project.objects.create(title="Local", slug="local", source="/code/local.zip")
+        Publication.objects.create(title="With repo", status="Accepted", project=repo)
+        Publication.objects.create(title="With a path", status="Accepted", project=local)
+        Publication.objects.create(title="No project", status="Preprint")
+
+        apps = self.migrate([("sevanbnet", "0035_publication_code_url")])
+        code = dict(
+            apps.get_model("sevanbnet", "Publication").objects.values_list("title", "code_url")
+        )
+        self.assertEqual(
+            code, {"With repo": "https://github.com/s", "With a path": "", "No project": ""}
+        )
