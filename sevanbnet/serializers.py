@@ -21,6 +21,7 @@ class ProjectSerializer(BlanksAsNull):
             "slug",
             "title",
             "listed",
+            "standalone",
             "rank",
             "start",
             "end",

@@ -9,6 +9,8 @@ FRONTEND_SERVICE_ID; Railway provides RAILWAY_ENVIRONMENT_ID itself.
 """
 
 import json
+import logging
+import threading
 import urllib.error
 import urllib.request
 
@@ -19,6 +21,16 @@ DEPLOY = (
     "mutation($service: String!, $environment: String!) {"
     " serviceInstanceDeployV2(serviceId: $service, environmentId: $environment) }"
 )
+
+
+# Saving content in the control panel rebuilds the site by itself, so its prerendered pages
+# (what crawlers and language models read) and the text built into the app never fall
+# behind: SETTLE seconds after the last save, so a run of edits makes one build.
+SETTLE = 45
+
+log = logging.getLogger(__name__)
+_timer = None
+_lock = threading.Lock()
 
 
 class RebuildError(Exception):
@@ -63,3 +75,29 @@ def rebuild():
     if data.get("errors"):
         raise RebuildError(f"Railway said: {data['errors'][0].get('message', 'unknown error')}")
     return (data.get("data") or {}).get("serviceInstanceDeployV2")
+
+
+def soon():
+    """Rebuild SETTLE seconds from now; each call starts the wait again. False if this
+    server can't rebuild (not configured)."""
+    global _timer
+    if not configured():
+        return False
+    with _lock:
+        if _timer:
+            _timer.cancel()
+        _timer = threading.Timer(SETTLE, _fire)
+        _timer.daemon = True
+        _timer.start()
+    return True
+
+
+def _fire():
+    global _timer
+    with _lock:
+        _timer = None
+    try:
+        rebuild()
+        log.info("Rebuild started after a content edit.")
+    except RebuildError as error:
+        log.warning("Automatic rebuild failed: %s (use Rebuild site in the panel)", error)

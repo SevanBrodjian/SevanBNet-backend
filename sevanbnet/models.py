@@ -58,6 +58,13 @@ class Project(models.Model):
         help_text="Off: the page still exists, and papers can link to it, "
         "but it isn't in the Projects list.",
     )
+    standalone = models.BooleanField(
+        "Standalone page",
+        default=False,
+        db_default=False,
+        help_text="On: the page stands on its own, like a paper's: no navigation bar (a link home "
+        "at its top instead) and a plain background.",
+    )
     rank = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
