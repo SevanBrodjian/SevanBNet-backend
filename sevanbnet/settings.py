@@ -232,6 +232,7 @@ UNFOLD = {
     "SITE_URL": SITE_URL,
     "SITE_SYMBOL": "tune",
     "STYLES": [lambda request: static("sevanbnet/panel.css")],
+    "SCRIPTS": [lambda request: static("sevanbnet/sidebar.js")],
     "SITE_FAVICONS": [
         {"rel": "icon", "type": "image/png", "href": f"{SITE_URL}/favicon-32x32.png"}
     ],
