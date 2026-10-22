@@ -188,6 +188,13 @@ class Publication(models.Model):
         null=True, blank=True, help_text="Publication date, or the submission date until then."
     )
     paper_url = models.URLField("Paper link", max_length=500, blank=True, help_text="PDF or arXiv.")
+    code_url = models.URLField(
+        "Code link",
+        max_length=500,
+        blank=True,
+        help_text="The paper's code, e.g. its GitHub repository. Shows a Code button on the "
+        "Papers page.",
+    )
     project = models.ForeignKey(
         Project,
         on_delete=models.SET_NULL,
