@@ -203,7 +203,10 @@ class PanelTests(TestCase):
 
         with (
             override_settings(
-                RAILWAY_DEPLOY_TOKEN="t", FRONTEND_SERVICE_ID="s", RAILWAY_ENVIRONMENT_ID="e"
+                RAILWAY_DEPLOY_TOKEN="t",
+                FRONTEND_SERVICE_ID="s",
+                RAILWAY_PROJECT_ID="p",
+                RAILWAY_ENVIRONMENT_ID="e",
             ),
             mock.patch.object(rebuild, "SETTLE", 0.05),
             mock.patch.object(rebuild, "rebuild") as deploy,
@@ -213,6 +216,34 @@ class PanelTests(TestCase):
             rebuild._timer.join()
         deploy.assert_called_once()
         self.assertFalse(rebuild.soon())  # not configured here
+
+    def test_rebuild_changes_a_variable_so_the_build_runs_again(self):
+        from . import rebuild
+
+        answers = []
+        for data in ({"variableUpsert": True}, {"serviceInstanceDeployV2": "deploy-1"}):
+            answer = mock.MagicMock()
+            answer.__enter__.return_value.read.return_value = json.dumps({"data": data})
+            answers.append(answer)
+        with (
+            override_settings(
+                RAILWAY_DEPLOY_TOKEN="secret-token",
+                FRONTEND_SERVICE_ID="s",
+                RAILWAY_PROJECT_ID="p",
+                RAILWAY_ENVIRONMENT_ID="e",
+            ),
+            mock.patch("sevanbnet.rebuild.urllib.request.urlopen", side_effect=answers) as urlopen,
+        ):
+            self.assertEqual(rebuild.rebuild(), "deploy-1")
+        stamp, deploy = (json.loads(c.args[0].data) for c in urlopen.call_args_list)
+        self.assertIn("variableUpsert", stamp["query"])
+        self.assertEqual(stamp["variables"]["input"]["name"], "CONTENT_REBUILD")
+        self.assertEqual(stamp["variables"]["input"]["serviceId"], "s")
+        self.assertTrue(stamp["variables"]["input"]["skipDeploys"])
+        self.assertIn("serviceInstanceDeployV2", deploy["query"])
+        self.assertEqual(
+            urlopen.call_args.args[0].get_header("Project-access-token"), "secret-token"
+        )
 
     def test_media_upload_commits_to_github(self):
         client = panel_client()
