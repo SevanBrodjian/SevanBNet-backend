@@ -4,8 +4,12 @@ The frontend prerenders its pages (for crawlers) from this API at build time, so
 edits reach those pages only after a new build. This redeploys the frontend service of
 the same Railway environment from its latest commit.
 
+Railway's builder reuses the frontend's build step whenever nothing it can see has changed,
+and new content in this API isn't something it can see. So each rebuild first sets the
+service's CONTENT_REBUILD variable to the current time, which makes the build run again.
+
 Needs RAILWAY_DEPLOY_TOKEN (a Railway project token for this environment) and
-FRONTEND_SERVICE_ID; Railway provides RAILWAY_ENVIRONMENT_ID itself.
+FRONTEND_SERVICE_ID; Railway provides RAILWAY_PROJECT_ID and RAILWAY_ENVIRONMENT_ID itself.
 """
 
 import json
@@ -13,6 +17,7 @@ import logging
 import threading
 import urllib.error
 import urllib.request
+from datetime import UTC, datetime
 
 from django.conf import settings
 
@@ -21,6 +26,7 @@ DEPLOY = (
     "mutation($service: String!, $environment: String!) {"
     " serviceInstanceDeployV2(serviceId: $service, environmentId: $environment) }"
 )
+STAMP = "mutation($input: VariableUpsertInput!) { variableUpsert(input: $input) }"
 
 
 # Saving content in the control panel rebuilds the site by itself, so its prerendered pages
@@ -41,19 +47,31 @@ def configured():
     return bool(
         settings.RAILWAY_DEPLOY_TOKEN
         and settings.FRONTEND_SERVICE_ID
+        and settings.RAILWAY_PROJECT_ID
         and settings.RAILWAY_ENVIRONMENT_ID
     )
 
 
 def rebuild():
-    """Start a new frontend deploy. Returns Railway's deployment id."""
-    body = {
-        "query": DEPLOY,
-        "variables": {
-            "service": settings.FRONTEND_SERVICE_ID,
-            "environment": settings.RAILWAY_ENVIRONMENT_ID,
-        },
+    """Start a new frontend build and deploy. Returns Railway's deployment id."""
+    stamp = {
+        "projectId": settings.RAILWAY_PROJECT_ID,
+        "environmentId": settings.RAILWAY_ENVIRONMENT_ID,
+        "serviceId": settings.FRONTEND_SERVICE_ID,
+        "name": "CONTENT_REBUILD",
+        "value": datetime.now(UTC).isoformat(timespec="seconds"),
+        "skipDeploys": True,  # the deploy below is the one build
     }
+    _call(STAMP, {"input": stamp})
+    data = _call(
+        DEPLOY,
+        {"service": settings.FRONTEND_SERVICE_ID, "environment": settings.RAILWAY_ENVIRONMENT_ID},
+    )
+    return data.get("serviceInstanceDeployV2")
+
+
+def _call(query, variables):
+    body = {"query": query, "variables": variables}
     request = urllib.request.Request(
         RAILWAY_API,
         data=json.dumps(body).encode(),
@@ -74,7 +92,7 @@ def rebuild():
     # GraphQL reports failures in the body, even with HTTP 200.
     if data.get("errors"):
         raise RebuildError(f"Railway said: {data['errors'][0].get('message', 'unknown error')}")
-    return (data.get("data") or {}).get("serviceInstanceDeployV2")
+    return data.get("data") or {}
 
 
 def soon():

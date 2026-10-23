@@ -223,6 +223,7 @@ GITHUB_MEDIA_TOKEN = os.environ.get("GITHUB_MEDIA_TOKEN", "")
 # "Rebuild site": redeploys this environment's frontend through Railway's API.
 RAILWAY_DEPLOY_TOKEN = os.environ.get("RAILWAY_DEPLOY_TOKEN", "")
 FRONTEND_SERVICE_ID = os.environ.get("FRONTEND_SERVICE_ID", "")
+RAILWAY_PROJECT_ID = os.environ.get("RAILWAY_PROJECT_ID", "")
 RAILWAY_ENVIRONMENT_ID = os.environ.get("RAILWAY_ENVIRONMENT_ID", "")
 
 UNFOLD = {
